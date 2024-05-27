@@ -1,1 +1,2 @@
-# time_series_experiment
+# Time series modelling experiments
+
