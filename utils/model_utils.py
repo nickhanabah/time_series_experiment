@@ -40,9 +40,11 @@ class ARNet(nn.Module):
         super(ARNet, self).__init__()
         self.layers = layers
         if layers ==1: 
+            print('Model running on 1 Layer')
             self.input_trend_layer = nn.Linear(p_lag * n_features, future_steps)
             self.input_seasonal_layer = nn.Linear(p_lag * n_features, future_steps)
         elif layers ==2: 
+            print('Model running on 2 Layers')
             self.input_trend_layer = nn.Linear(p_lag * n_features, math.ceil(p_lag * n_features/1.5))
             self.output_trend_layer = nn.Linear(math.ceil(p_lag * n_features/1.5), future_steps)
             self.relu = nn.ReLU()
@@ -50,6 +52,7 @@ class ARNet(nn.Module):
             self.output_seasonal_layer = nn.Linear(math.ceil(p_lag * n_features/1.5), future_steps)
         
         elif layers ==3: 
+            print('Model running on 3 Layers')
             self.input_trend_layer = nn.Linear(p_lag * n_features, math.ceil(p_lag * n_features/1.5))
             self.hidden_trend_layer = nn.Linear(math.ceil(p_lag * n_features/1.5), math.ceil(p_lag * n_features/3))
             self.output_trend_layer = nn.Linear(math.ceil(p_lag * n_features/3), future_steps)
