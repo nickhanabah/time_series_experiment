@@ -23,6 +23,6 @@ The operations are as follows:
 2. We decompose $\tilde{X}_{i-1-L:i-1}$ into its trend and seasonal component
 
 
-$\tilde{X}_{i-1-L:i-1}$, $\tilde{X}_{i-1-L:i-1}$ = $decomposition(\tilde{X}_{i-1-L:i-1})$ 
+$\tilde{X}_{i-1-L:i-1}, \tilde{X}_{i-1-L:i-1}$ = $decomposition(\tilde{X}_{i-1-L:i-1})$ 
 
 $\tilde{Y}$ = $W_{trend}^T \tilde{X}_{trend_{i-1-L:i-1}}$ + $W_{seasonal}^T X_{seasonal_{i-1-L:i-1}}$
