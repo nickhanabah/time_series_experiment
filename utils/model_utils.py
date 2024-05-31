@@ -51,12 +51,12 @@ class ARNet(nn.Module):
         
         elif layers ==3: 
             self.input_trend_layer = nn.Linear(p_lag * n_features, math.ceil(p_lag * n_features/1.5))
-            self.hidden_trend_layer = nn.Linear(math.ceil(p_lag * n_features/1.5), math.ceil(p_lag * n_features/1.5/1.5))
-            self.output_trend_layer = nn.Linear(math.ceil(p_lag * n_features/1.5), future_steps)
+            self.hidden_trend_layer = nn.Linear(math.ceil(p_lag * n_features/1.5), math.ceil(p_lag * n_features/3))
+            self.output_trend_layer = nn.Linear(math.ceil(p_lag * n_features/3), future_steps)
             self.relu = nn.ReLU()
             self.input_seasonal_layer = nn.Linear(p_lag * n_features, math.ceil(p_lag * n_features/1.5))
-            self.hidden_seasonal_layer = nn.Linear(math.ceil(p_lag * n_features/1.5), math.ceil(p_lag * n_features/1.5/1.5))
-            self.output_seasonal_layer = nn.Linear(math.ceil(p_lag * n_features/1.5), future_steps)
+            self.hidden_seasonal_layer = nn.Linear(math.ceil(p_lag * n_features/1.5), math.ceil(p_lag * n_features/3))
+            self.output_seasonal_layer = nn.Linear(math.ceil(p_lag * n_features/3), future_steps)
 
         self.decomp_layer = DecompositionLayer(decomp_kernel_size, n_features)
         self.criterion = nn.MSELoss()
