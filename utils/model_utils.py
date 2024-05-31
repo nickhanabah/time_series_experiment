@@ -73,6 +73,18 @@ class ARNet(nn.Module):
         input = input.float()
         input_season, input_trend = self.decomp_layer(input)
 
+        new_input = input.reshape(self.batch_size, self.p_lag,self.n_features)
+        print('new input shape')
+        print(new_input.shape)
+        print('new input')
+        print(new_input)
+        print('new input mean')
+        print(torch.mean(new_input), dim=1)
+        print('new input std')
+        print(torch.std(new_input), dim = 1)
+
+        print(input.reshape(self.batch_size, self.p_lag,self.n_features) - torch.mean(input.reshape(self.batch_size, self.p_lag,self.n_features), dim=1))
+
         if self.layers ==1: 
             y_hat_season = self.input_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*self.n_features))
             y_hat_trend = self.input_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*self.n_features))
