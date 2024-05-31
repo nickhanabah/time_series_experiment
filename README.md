@@ -13,10 +13,12 @@ The aim is to find a function $f(.)$ that maps the input $Y_{i-1-L:i-1}$ and $X_
 $Y_{i:i+T} = f(X_{i-1-L:i-1}, Y_{i-1-L:i-1})$
 
 
-The proposed Dlinear model consists of a decomposition layer, where the input $Y_{i-1-L:i-1}$ and $X_{i-1-L:i-1}$ is decomposed into a seasonal and a trend components plus two linear layers to transform each of the decomposed inputs into some meaningful signal regarding the output $Y_{i:i+T}$. 
+The proposed Dlinear model consists of a decomposition layer, where the input $Y_{i-1-L:i-1}$ and $X_{i-1-L:i-1}$ is decomposed into a seasonal and a trend components plus two linear layers to transform each of the decomposed inputs into some meaningful signal regarding the output $y_{i:i+T}$. 
+
+
+# Model 
 
 The operations are as follows: 
-
 
 1. We combine the target and the feature variable with regards to our lookback window $i-1-L:i-1$ to a new feature matrix $\tilde{X}_{i-1-L:i-1}$. 
 
@@ -27,8 +29,16 @@ The operations are as follows:
 3. We concatenate the input to get 
 
     $\tilde{X_{t_{concat}}}$ = $\tilde{X_{t_{1}}} \mathbin\Vert ... \mathbin\Vert \tilde{X_{t_{N}}}$
+    
     $\tilde{X_{s_{concat}}}$ = $\tilde{X_{s_{1}}} \mathbin\Vert ... \mathbin\Vert \tilde{X_{s_{N}}}$
 
 4. We use the concatenated input to forecast our target values
 
-    $\hat{Y}$ = $W_{t}^T \tilde{X_{t_{concat}}}$ + $W_{s}^T \tilde{X_{s_{concat}}}$
+    $\hat{y}$ = $W_{t}^T \tilde{X_{t_{concat}}}$ + $W_{s}^T \tilde{X_{s_{concat}}}$
+
+
+# Loss 
+
+Our model and its respective parameters are optimized for the MSE loss. 
+
+MSE = $\frac{1}{T} \Sigma_{i=1}^T({y_i}-\hat{y_i})^2$
