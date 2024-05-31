@@ -28,13 +28,13 @@ The operations are as follows:
 
 3. We concatenate the input to get 
 
-    $\tilde{X}_{t_concat}$ = $\tilde{X_{t_{1}}} \mathbin\Vert ... \mathbin\Vert \tilde{X_{t_{N}}}$
+    $\tilde{X_{t_{concat}}}$ = $\tilde{X_{t_{1}}} \mathbin\Vert ... \mathbin\Vert \tilde{X_{t_{N}}}$
     
-    $\tilde{X}_{s_concat}$ = $\tilde{X_{s_{1}}} \mathbin\Vert ... \mathbin\Vert \tilde{X_{s_{N}}}$
+    $\tilde{X_{s_{concat}}}$ = $\tilde{X_{s_{1}}} \mathbin\Vert ... \mathbin\Vert \tilde{X_{s_{N}}}$
 
 4. We use the concatenated input to forecast our target values
 
-    $\hat{y}$ = $W_{t}^T \tilde{X}_{t_concat}$ + $W_{s}^T \tilde{X}_{s_concat}$
+    $\hat{y}$ = $W_{t}^T \tilde{X_{t_{concat}}}$ + $W_{s}^T \tilde{X_{s_{concat}}}$
 
 
 # Loss 
