@@ -22,7 +22,13 @@ The operations are as follows:
 
 2. We decompose $\tilde{X}_{i-1-L:i-1}$ into its trend and seasonal component
 
+    $\tilde{X_{t}}, \tilde{X_{s}}$ = $decomposition(\tilde{X}_{i-1-L:i-1})$ 
 
-* $\tilde{X_{t}}, \tilde{X_{s}}$ = $decomposition(\tilde{X}_{i-1-L:i-1})$ 
+3. We concatenate the input to get 
 
-* $\hat{Y}$ = $W_{t}^T \tilde{X_{t}}$ + $W_{s}^T \tilde{X_{s}}$
+    $\tilde{X_{t_{concat}}}$ = $\tilde{X_{t_{1}}} \mathbin\Vert ... \mathbin\Vert \tilde{X_{t_{N}}}$
+    $\tilde{X_{s_{concat}}}$ = $\tilde{X_{s_{1}}} \mathbin\Vert ... \mathbin\Vert \tilde{X_{s_{N}}}$
+
+4. We use the concatenated input to forecast our target values
+
+    $\hat{Y}$ = $W_{t}^T \tilde{X_{t_{concat}}}$ + $W_{s}^T \tilde{X_{s_{concat}}}$
