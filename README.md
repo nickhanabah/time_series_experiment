@@ -41,16 +41,16 @@ The operations are as follows:
 
 Our model and its respective parameters are optimized for the MSE loss. 
 
-    MSE = $\frac{1}{T} \Sigma_{i=1}^T({y_i}-\hat{y_i})^2$
+    $J($\theta$)$ = $\frac{1}{T} \Sigma_{i=1}^{T} ({y_i}-\hat{y_i})^2$ 
 
 
 # Evaluation metrics
 
 Our model is evaluated against MSE, MAE and MAPE. 
 
-    MSE = $\frac{1}{T} \Sigma_{i=1}^T({y_i}-\hat{y_i})^2$
+    $MSE$ = $\frac{1}{T} \Sigma_{i=1}^T({y_i}-\hat{y_i})^2$
 
-    MAE = $\frac{1}{T} \Sigma_{i=1}^T|{y_i}-\hat{y_i}|$
+    $MAE$ = $\frac{1}{T} \Sigma_{i=1}^T|{y_i}-\hat{y_i}|$
 
-    MAPE = $\frac{1}{T} \Sigma_{i=1}^T|\frac{{y_i}-\hat{y_i}}{{y_i}}|$
+    $MAPE$ = $\frac{1}{T} \Sigma_{i=1}^T|\frac{{y_i}-\hat{y_i}}{{y_i}}|$
 
