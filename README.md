@@ -52,5 +52,5 @@ $MSE$ = $\frac{1}{T} \Sigma_{i=1}^T({y_i}-\hat{y_i})^2$
 
 $MAE$ = $\frac{1}{T} \Sigma_{i=1}^T|{y_i}-\hat{y_i}|$
 
-$MAPE$ = $\frac{1}{T} \Sigma_{i=1}^T|\frac{{y_i}-\hat{y_i}}{{y_i}} + $\epsilon|$ with $\epsilon$ being a very small number added for numerical stability.
+$MAPE$ = $\frac{1}{T} \Sigma_{i=1}^T|\frac{{y_i}-\hat{y_i}}{{y_i + \epsilon}}|$ with $\epsilon$ being a very small number added for numerical stability.
 
