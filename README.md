@@ -2,6 +2,6 @@
 
 # Model: 
 
-$X_trend, X_seasonal = decomposition(X)$
+$X_{trend}, X_{seasonal} = decomposition(X)$
 
-$Y_hat = W_trend^T X_trend + W_seasonal^T X_seasonal$
+$Y_{hat} = W_{trend}^T X_{trend} + W_{seasonal}^T X_{seasonal}$
