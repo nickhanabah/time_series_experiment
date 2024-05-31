@@ -31,6 +31,7 @@ class ARNet(nn.Module):
         else: 
             self.input_trend_layer = nn.Linear(p_lag * n_features, math.ceil(p_lag * n_features/1.5))
             self.output_trend_layer = nn.Linear(math.ceil(p_lag * n_features/1.5), future_steps)
+            self.relu = nn.ReLU()
             self.input_seasonal_layer = nn.Linear(p_lag * n_features, math.ceil(p_lag * n_features/1.5))
             self.output_seasonal_layer = nn.Linear(math.ceil(p_lag * n_features/1.5), future_steps)
 
@@ -48,8 +49,8 @@ class ARNet(nn.Module):
             y_hat_season = self.input_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*self.n_features))
             y_hat_trend = self.input_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*self.n_features))
         else: 
-            y_hat_season = self.input_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*self.n_features))
-            y_hat_trend = self.input_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*self.n_features))
+            y_hat_season = self.relu(self.input_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*self.n_features)))
+            y_hat_trend = self.relu(self.input_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*self.n_features)))
             y_hat_season = self.output_seasonal_layer(y_hat_season)
             y_hat_trend = self.output_trend_layer(y_hat_trend)
             
