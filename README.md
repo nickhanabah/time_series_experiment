@@ -40,7 +40,8 @@ The operations are as follows:
 # Loss 
 
 Our model and its respective parameters are optimized for the MSE loss. 
-$J($\theta$)$ = $\frac{1}{T} \Sigma_{i=1}^{T} ({y_i}-\hat{y_i})^2$ 
+
+    $J(\theta)$ = $\frac{1}{T} \Sigma_{i=1}^{T} ({y_i}-\hat{y_i})^2$ 
 
 
 # Evaluation metrics
