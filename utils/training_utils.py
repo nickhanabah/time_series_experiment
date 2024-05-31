@@ -1,12 +1,14 @@
 import torch
-from utils.model_utils import ARNet
+from utils.model_utils import ARNet, set_seed
 from torch.utils.data import DataLoader
 from utils.data_utils import TimeSeriesDataset
 from utils.metrics import metric
 
 
-def train(epochs, p_lag, future_steps, n_features, training_df, validation_df, target_column = ['OT'], learning_rate=1.e-4, decomp_kernel_size= 7, batch_size = 8, one_layer = True): 
-    net = ARNet(p_lag=p_lag, n_features=n_features, future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, one_layer=one_layer)
+def train(epochs, p_lag, future_steps, n_features, training_df, validation_df, target_column = ['OT'], learning_rate=1.e-4, decomp_kernel_size= 7, batch_size = 8, layers = 1): 
+    
+    set_seed()
+    net = ARNet(p_lag=p_lag, n_features=n_features, future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, layers = layers)
 
     train_data = DataLoader(TimeSeriesDataset(training_df, future_steps= future_steps, target_column = target_column,p_lag=p_lag), batch_size=batch_size, drop_last=True)
     train_loss_list = []
