@@ -18,6 +18,10 @@ The proposed Dlinear model consists of a decomposition layer, where the input $Y
 The operations are as follows: 
 
 
+1. We combine the target and the feature variable with regards to our lookback window $i-1-L:i-1$ to a new feature matrix $\widetilde{X_{i-1-L:i-1}}$. 
+
+2. We decompose $\widetilde{X_{i-1-L:i-1}}$ into its trend and seasonal component
+
 
 $X_{trend_{i-1-L:i-1}}, X_{seasonal_{i-1-L:i-1}} = decomposition(X_{i-1-L:i-1})$ 
 
