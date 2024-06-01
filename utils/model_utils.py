@@ -137,6 +137,7 @@ class ARNet(nn.Module):
 
             print('final y_hat')
             y_hat = y_hat * (rev_std + rev_eps) + rev_mean
+            print(y_hat)
             return y_hat
 
             
