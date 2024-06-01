@@ -118,10 +118,10 @@ class ARNet(nn.Module):
             
             elif self.layers ==2: 
                 y_hat = self.relu(self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*self.n_features)))
-                y_hat_season = self.output_layer(y_hat)
+                y_hat = self.output_layer(y_hat)
 
             elif self.layers ==3: 
-                y_hat = self.relu(self.input_layer(input_season.reshape(self.batch_size, self.p_lag*self.n_features)))
+                y_hat = self.relu(self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*self.n_features)))
                 y_hat = self.relu(self.hidden_layer(y_hat))
                 y_hat = self.output_layer(y_hat)
 
