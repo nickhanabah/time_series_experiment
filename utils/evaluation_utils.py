@@ -12,7 +12,8 @@ def plot_multistep_forecast(test_data, neural_net, future_steps, number_of_forec
         if future_steps > 1: 
             [output_list.append(out) for out in output.tolist()]
         else: 
-            [output_list.append(out) for out in output.item()]
+            print(output.tolist())
+            [output_list.append(out[0]) for out in output.tolist()]
 
         [target_list.append(tar) for tar in labels.squeeze(1,2).tolist()]
 
