@@ -111,7 +111,6 @@ def train(epochs,
             outputs_array = outputs.detach().cpu().numpy()
             labels_array = labels.squeeze(2).detach().cpu().numpy()
             [residuals.append(labels_array.item(i) - output_array.item(i)) for i in range(len(output_array))]
-        print(residuals)
         return net, residuals
     
     else: 

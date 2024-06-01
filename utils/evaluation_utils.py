@@ -19,16 +19,18 @@ def plot_multistep_forecast(test_data, neural_net, future_steps, number_of_forec
                 target = target_list[i]
             else: 
                 target.append(target_list[i][len(target_list[i])-1])
+        alpha = 0.2
     else: 
         target = target_list
+        alpha = 1
 
     fig = plt.figure(figsize=(15, 15))
     plt.plot(range(0, len(target)), target, 'g', label='target time series')
     for i, output in enumerate(output_list, start=0): 
         if i == 0:
-            plt.plot(range(i, i +future_steps), output, color='#F39C12',linewidth=1, linestyle='-.',alpha=0.1, label='pred time series' + "\n" + f'{future_steps} each')
+            plt.plot(range(i, i +future_steps), output, color='#F39C12',linewidth=1, linestyle='-.',alpha=alpha, label='pred time series' + "\n" + f'{future_steps} each')
         else: 
-            plt.plot(range(i, i +future_steps), output, color='#F39C12',linewidth=1, linestyle='-.',alpha=0.2)
+            plt.plot(range(i, i +future_steps), output, color='#F39C12',linewidth=1, linestyle='-.',alpha=alpha)
     plt.legend(loc="upper left")
     plt.xlabel("Time Steps")
     plt.ylabel("Oil Temparature (Target variable)")
