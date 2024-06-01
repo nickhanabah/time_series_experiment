@@ -125,7 +125,11 @@ class ARNet(nn.Module):
                 y_hat = self.relu(self.hidden_layer(y_hat))
                 y_hat = self.output_layer(y_hat)
 
+            print('yhat')
+            print(y_hat)
+            print('mean')
             print(mean_values)
+            print(std_values)
             print(std_values)
 
             
