@@ -32,13 +32,11 @@ def train(epochs,
 
         train_counter = 0
         val_counter = 0
-
         running_train_loss = 0.
         running_val_loss = 0.
         running_train_mae  = 0.
         running_train_mse  = 0.
         running_train_mape = 0.
-        
         running_val_mae  = 0.
         running_val_mse  = 0.
         running_val_mape = 0.
@@ -53,8 +51,6 @@ def train(epochs,
             labels = labels.squeeze(0).float()
             optimizer.zero_grad()
             outputs = net(inputs)
-            #print(outputs.shape)
-            #print(labels.squeeze(1).shape)
             loss = net.criterion(outputs, labels.squeeze(1))
             loss.backward()
             torch.nn.utils.clip_grad_norm_(net.parameters(), 1)
@@ -63,7 +59,6 @@ def train(epochs,
             outputs_array = outputs.detach().cpu().numpy()
             if batch_size == 1: 
                 labels = labels.reshape(1,1,future_steps)
-            #print(labels.shape)
             labels_array = labels.squeeze(2).detach().cpu().numpy()
             mae, mse, mape= metric(pred=outputs_array, true=labels_array)
             running_train_mae  += mae
