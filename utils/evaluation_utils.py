@@ -12,14 +12,15 @@ def plot_multistep_forecast(test_data, neural_net, future_steps, number_of_forec
         [output_list.append(out) for out in output.tolist()]
         [target_list.append(tar) for tar in labels.squeeze(1,2).tolist()]
 
-    print(target_list)
-    print(len(target_list))
     target = []
-    for i in range(len(target_list)): 
-        if i == 0: 
-            target = target_list[i]
-        else: 
-            target.append(target_list[i][len(target_list[i])-1])
+    if future_steps > 1: 
+        for i in range(len(target_list)): 
+            if i == 0: 
+                target = target_list[i]
+            else: 
+                target.append(target_list[i][len(target_list[i])-1])
+    else: 
+        target = target_list
 
     fig = plt.figure(figsize=(15, 15))
     plt.plot(range(0, len(target)), target, 'g', label='target time series')
