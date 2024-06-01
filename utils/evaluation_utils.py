@@ -24,7 +24,7 @@ def plot_multistep_forecast(test_data, neural_net, future_steps, number_of_forec
         target = target_list
         alpha = 1
 
-    print(output)
+    print(output_list)
     fig = plt.figure(figsize=(15, 15))
     plt.plot(range(0, len(target)), target, 'g', label='target time series', alpha=0.9)
     for i, output in enumerate(output_list, start=0): 
