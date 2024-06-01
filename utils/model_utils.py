@@ -129,11 +129,11 @@ class ARNet(nn.Module):
             print(y_hat)
             print('mean')
             print(mean_values.shape)
-            print(mean_values.squeeze(1))
-            print(mean_values.squeeze(1)[7])
+            print(mean_values.squeeze(2))
+            print(mean_values.squeeze(2)[:,7])
             print("std_values")
             print(std_values.squeeze(1))
-            print(std_values.squeeze(1)[7])
+            print(std_values.squeeze(1)[:,7])
 
             
 
