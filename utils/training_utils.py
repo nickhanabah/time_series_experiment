@@ -57,8 +57,6 @@ def train(epochs,
             optimizer.step()
 
             outputs_array = outputs.detach().cpu().numpy()
-            if batch_size == 1: 
-                labels = labels.reshape(1,1,future_steps)
             labels_array = labels.squeeze(2).detach().cpu().numpy()
             mae, mse, mape= metric(pred=outputs_array, true=labels_array)
             running_train_mae  += mae
@@ -78,8 +76,6 @@ def train(epochs,
             running_val_loss += val_loss.item()
 
             output_array = output.detach().cpu().numpy()
-            if batch_size == 1: 
-                test_labels = test_labels.reshape(1,1,future_steps)
             test_labels_array = test_labels.squeeze(2).detach().cpu().numpy()
             mae, mse, mape = metric(pred=output_array, true=test_labels_array)
             running_val_mae  += mae
@@ -113,10 +109,9 @@ def train(epochs,
             outputs = net(inputs)
             loss = net.criterion(outputs, labels.squeeze(1))
             outputs_array = outputs.detach().cpu().numpy()
-            if batch_size == 1: 
-                labels = labels.reshape(1,1,future_steps)
             labels_array = labels.squeeze(2).detach().cpu().numpy()
             [residuals.append(labels_array[i] - output_array[i]) for i in range(len(output_array))]
+        print(residuals)
         return net, residuals
     
     else: 
