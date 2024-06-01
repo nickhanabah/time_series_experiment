@@ -135,6 +135,7 @@ class ARNet(nn.Module):
             print(rev_std)
             rev_eps = torch.full((self.batch_size, 1), 1e-12)
 
+            print('final y_hat')
             y_hat = y_hat * (rev_std + rev_eps) + rev_mean
             return y_hat
 
