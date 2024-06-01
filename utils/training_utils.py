@@ -14,7 +14,8 @@ def train(epochs,
           learning_rate=1.e-4, 
           decomp_kernel_size= 7, 
           batch_size = 8, 
-          layers = 1): 
+          layers = 1, 
+          get_residuals = False): 
     
     set_seed()
     net = ARNet(p_lag=p_lag, n_features=n_features, future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, layers = layers)
@@ -104,4 +105,20 @@ def train(epochs,
             print(f"Validation MAPE is {running_val_mape/train_counter}.")
             print("---------------------------")
     
-    return net
+    if get_residuals: 
+        residuals = []
+        for i, data in enumerate(train_data):
+            inputs, labels = data
+            labels = labels.squeeze(0).float()
+            outputs = net(inputs)
+            #print(outputs.shape)
+            #print(labels.squeeze(1).shape)
+            loss = net.criterion(outputs, labels.squeeze(1))
+
+            outputs_array = outputs.detach().cpu().numpy()
+            labels_array = labels.squeeze(2).detach().cpu().numpy()
+            [residuals.append(labels_array[i] - output_array[i]) for i in range(len(output_array))]
+        return net, residuals
+    
+    else: 
+        return net

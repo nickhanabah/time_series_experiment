@@ -69,21 +69,20 @@ class ARNet(nn.Module):
         self.future_steps = future_steps
 
     def forward(self, input):
-        
+        print(input.shape)
         input = input.float()
         input_season, input_trend = self.decomp_layer(input)
 
-        new_input = input.reshape(self.batch_size,self.n_features, self.p_lag)
-        print('new input shape')
-        print(new_input.shape)
-        print('new input')
-        print(new_input)
-        print('new input mean')
-        print(torch.mean(new_input ,dim=2).shape)
-        print('new input std')
-        print(torch.std(new_input, dim = 2).shape)
-
-        print(new_input - torch.mean(new_input ,dim=2).reshape(self.batch_size,self.n_features, 1))
+        #new_input = input.reshape(self.batch_size,self.n_features, self.p_lag)
+        #print('new input shape')
+        #print(new_input.shape)
+        #print('new input')
+        #print(new_input)
+        #print('new input mean')
+        #print(torch.mean(new_input ,dim=2).shape)
+        #print('new input std')
+        #print(torch.std(new_input, dim = 2).shape)
+        #print(new_input - torch.mean(new_input ,dim=2).reshape(self.batch_size,self.n_features, 1))
 
         if self.layers ==1: 
             y_hat_season = self.input_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*self.n_features))
