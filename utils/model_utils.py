@@ -84,11 +84,9 @@ class ARNet(nn.Module):
         #print(torch.std(new_input, dim = 2).shape)
         mean_adj_input = new_input - torch.mean(new_input ,dim=2).reshape(self.batch_size,self.n_features, 1)
         print('new input mean')
-        print(mean_adj_input.shape)
         print(mean_adj_input)
         print('new input std')
-        print(torch.std(new_input, dim = 2).shape)
-        print(torch.std(new_input, dim = 2))
+        print(torch.std(new_input, dim = 2).reshape(self.batch_size,self.n_features, 1))
         standardized_input = mean_adj_input/torch.std(new_input, dim = 2).reshape(self.batch_size,self.n_features, 1)
         print(standardized_input)
 
