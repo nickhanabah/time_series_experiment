@@ -61,6 +61,7 @@ def train(epochs,
             optimizer.step()
 
             outputs_array = outputs.detach().cpu().numpy()
+            print(labels.shape)
             labels_array = labels.squeeze(2).detach().cpu().numpy()
             mae, mse, mape= metric(pred=outputs_array, true=labels_array)
             running_train_mae  += mae
