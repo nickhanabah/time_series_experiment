@@ -69,7 +69,7 @@ class ARNet(nn.Module):
         self.future_steps = future_steps
 
     def forward(self, input):
-        print(input.shape)
+        #print(input.shape)
         input = input.float()
         input_season, input_trend = self.decomp_layer(input)
 
