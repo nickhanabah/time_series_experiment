@@ -2,6 +2,9 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 
+import warnings
+warnings.simplefilter(action='ignore', category=UserWarning)
+
 def transform_date_column_and_drop_it(df, date_column_name:str, remain_same = True):
     df = df.copy()
     if remain_same: 
