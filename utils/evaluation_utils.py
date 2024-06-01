@@ -37,8 +37,6 @@ def plot_multistep_forecast(test_data, neural_net, future_steps, number_of_forec
             else: 
                 plt.plot(range(i, i +future_steps), output, color='#F39C12',linewidth=1, linestyle='-.',alpha=alpha)
     else:
-        print(len(target))
-        print(len(output_list))
         plt.plot(range(0, len(target)), target, 'g', label='target time series', alpha=0.9)
         plt.plot(range(0, len(output_list)), output_list, color='#F39C12',linewidth=1, linestyle='-.',alpha=alpha)
 
