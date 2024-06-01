@@ -53,7 +53,7 @@ def train(epochs,
             outputs = net(inputs)
             loss = net.criterion(outputs, labels.squeeze(1))
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(net.parameters(), 1)
+            #torch.nn.utils.clip_grad_norm_(net.parameters(), 1)
             optimizer.step()
 
             outputs_array = outputs.detach().cpu().numpy()
