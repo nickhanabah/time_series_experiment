@@ -125,7 +125,6 @@ class ARNet(nn.Module):
                 y_hat = self.relu(self.hidden_layer(y_hat))
                 y_hat = self.output_layer(y_hat)
 
-            print(rev_mean.shape)
             print(mean_values.shape)
             rev_mean = mean_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, self.future_steps) 
             rev_std = std_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, self.future_steps)
