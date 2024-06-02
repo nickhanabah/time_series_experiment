@@ -120,7 +120,7 @@ class ARNet(nn.Module):
             return y_hat  
 
 
-        elif self.model == 'dlinear': 
+        elif self.model == 'rlinear': 
             new_input = input.reshape(self.batch_size,self.n_features, self.p_lag)
             mean_values = torch.mean(new_input ,dim=2).reshape(self.batch_size,self.n_features, 1)
             mean_adj_input = new_input - mean_values
