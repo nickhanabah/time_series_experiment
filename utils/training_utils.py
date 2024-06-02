@@ -41,9 +41,9 @@ def train(epochs,
         running_val_mse  = 0.
         running_val_mape = 0.
 
-        #if epoch + 1 != 1 and (epoch + 1) % 2 == 0: 
-        #    learning_rate = learning_rate / 2
-        #    optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
+        if epoch + 1 != 1 and (epoch + 1) % 2 == 0: 
+            learning_rate = learning_rate / 2
+            optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
         print(f"Current learning rate is : {learning_rate}")  
         print("---------------------------")
         for i, data in enumerate(train_data):
@@ -53,14 +53,15 @@ def train(epochs,
             outputs = net(inputs)
             loss = net.criterion(outputs, labels.squeeze(1))
             if loss.item() > 100000: 
-                print('loss')
-                print(loss)
-                print('outputs')
-                print(outputs)
-                print('target')
-                print(labels.squeeze(1))
-                print('input')
-                print(torch.std(inputs.reshape(batch_size,n_features, p_lag), dim = 2).reshape(batch_size,n_features, 1))
+                print('Loss explosion! This might be due to a very small value that is the divided by...')
+                #print('loss')
+                #print(loss)
+                #print('outputs')
+                #print(outputs)
+                #print('target')
+                #print(labels.squeeze(1))
+                #print('input')
+                #print(torch.std(inputs.reshape(batch_size,n_features, p_lag), dim = 2).reshape(batch_size,n_features, 1))
             loss.backward()
             #torch.nn.utils.clip_grad_norm_(net.parameters(), 1)
             optimizer.step()
