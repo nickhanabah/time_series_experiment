@@ -52,7 +52,7 @@ def train(epochs,
             optimizer.zero_grad()
             outputs = net(inputs)
             loss = net.criterion(outputs, labels.squeeze(1))
-            if loss.item() > 100: 
+            if loss.item() > 100000: 
                 print('loss')
                 print(loss)
                 print('outputs')
