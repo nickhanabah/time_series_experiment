@@ -41,9 +41,9 @@ def train(epochs,
         running_val_mse  = 0.
         running_val_mape = 0.
 
-        if epoch + 1 != 1 and (epoch + 1) % 2 == 0: 
-            learning_rate = learning_rate / 2
-            optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
+        #if epoch + 1 != 1 and (epoch + 1) % 2 == 0: 
+        #    learning_rate = learning_rate / 2
+        #    optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
         print(f"Current learning rate is : {learning_rate}")  
         print("---------------------------")
         for i, data in enumerate(train_data):
