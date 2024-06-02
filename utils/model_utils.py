@@ -189,7 +189,7 @@ class ARNet(nn.Module):
 
             y_hat = self.relu(self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*self.n_features)))
             y_hat = y_hat.reshape(self.batch_size,self.n_features, self.p_lag) + standardized_input
-            y_hat = self.relu(self.output_layer(y_hat.reshape(self.batch_size, self.p_lag*self.n_features)))
+            y_hat = self.output_layer(y_hat.reshape(self.batch_size, self.p_lag*self.n_features))
             rev_mean = mean_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, 1) 
             rev_std = std_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, 1)
             rev_eps = torch.full((self.batch_size, 1), 1)
