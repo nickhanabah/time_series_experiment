@@ -23,7 +23,7 @@ def plot_multistep_forecast(test_data, neural_net, future_steps, number_of_forec
                 target = target_list[i]
             else: 
                 target.append(target_list[i][len(target_list[i])-1])
-        alpha = 0.3
+        alpha = 0.35
     else: 
         target = target_list
         alpha = 1
@@ -38,7 +38,7 @@ def plot_multistep_forecast(test_data, neural_net, future_steps, number_of_forec
                 plt.plot(range(i, i +future_steps), output, color='#F39C12',linewidth=1, linestyle='-.',alpha=alpha)
     else:
         plt.plot(range(0, len(target)), target, 'g', label='target time series', alpha=0.9)
-        plt.plot(range(0, len(output_list)), output_list, color='#F39C12',linewidth=1, linestyle='-.',alpha=alpha)
+        plt.plot(range(0, len(output_list)), output_list, color='#F39C12',linewidth=1, linestyle='-.',alpha=alpha, label='pred time series' + "\n" + f'{future_steps} each')
 
     plt.legend(loc="upper left")
     plt.xlabel("Time Steps")
