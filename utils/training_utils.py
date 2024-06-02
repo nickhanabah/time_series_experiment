@@ -34,6 +34,10 @@ def train(epochs,
 
     torch.set_grad_enabled(True)
     optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
+    if optimization == 'intervals': 
+        loweroptimizer = torch.optim.Adam(lowerboundnet.parameters(), lr=learning_rate)
+        upperoptimizer = torch.optim.Adam(upperboundnet.parameters(), lr=learning_rate)
+
 
     for epoch in range(epochs): 
 
@@ -58,21 +62,21 @@ def train(epochs,
             labels = labels.squeeze(0).float()
 
             if optimization == 'intervals': 
-                optimizer.zero_grad()
+                upperoptimizer.zero_grad()
                 outputs = upperboundnet(inputs)
-                print('o')
-                print(outputs.shape)
-                print('l')
-                print(labels.squeeze(1).shape)
-                loss = upperboundnet.upperquantilecriterion(outputs, labels.squeeze(1))
+                #print('o')
+                #print(outputs.shape)
+                #print('l')
+                #print(labels.squeeze(1).shape)
+                loss = upperboundnet.upperquantilecriterion(outputs.reshape(1,batch_size*future_steps), labels.squeeze(1).reshape(1,batch_size*future_steps))
                 loss.backward()
-                optimizer.step()
+                upperoptimizer.step()
 
-                optimizer.zero_grad()
+                loweroptimizer.zero_grad()
                 outputs = lowerboundnet(inputs)
                 loss = lowerboundnet.lowerquantilecriterion(outputs, labels.squeeze(1))
                 loss.backward()
-                optimizer.step()
+                loweroptimizer.step()
 
             optimizer.zero_grad()
             outputs = net(inputs)

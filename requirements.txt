@@ -2,3 +2,4 @@ pandas
 torchvision
 torch
 matplotlib
+pytorch_forecasting
