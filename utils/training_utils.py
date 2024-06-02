@@ -59,6 +59,8 @@ def train(epochs,
                 print(outputs)
                 print('target')
                 print(labels.squeeze(1))
+                print('input')
+                print(torch.std(input.reshape(batch_size,n_features, p_lag), dim = 2).reshape(batch_size,n_features, 1))
             loss.backward()
             #torch.nn.utils.clip_grad_norm_(net.parameters(), 1)
             optimizer.step()
