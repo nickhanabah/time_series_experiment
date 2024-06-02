@@ -132,8 +132,8 @@ class ARNet(nn.Module):
             #print('rev_mean')
             #print(rev_mean)
             rev_std = std_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, 1)
-            #print('rev_std')
-            #print(rev_std)
+            print('std_values')
+            print(std_values)
             rev_eps = torch.full((self.batch_size, 1), 1e-12)
 
             #print('final y_hat')
