@@ -16,10 +16,16 @@ def train(epochs,
           batch_size = 8, 
           layers = 1, 
           get_residuals = False, 
-          model = 'rlinear'): 
+          model = 'rlinear', 
+          optimization = 'intervals'): 
     
     set_seed()
-    net = ARNet(p_lag=p_lag, n_features=n_features, future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, layers = layers, model = model)
+    if optimization == 'intervals': 
+        lowerboundnet = ARNet(p_lag=p_lag, n_features=n_features, future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, layers = layers, model = model, optimization='lowerquantile')
+        net = ARNet(p_lag=p_lag, n_features=n_features, future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, layers = layers, model = model, optimization='mse')
+        upperboundnet = ARNet(p_lag=p_lag, n_features=n_features, future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, layers = layers, model = model, optimization='upperquantile')
+    else:    
+        net = ARNet(p_lag=p_lag, n_features=n_features, future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, layers = layers, model = model)
 
     train_data = DataLoader(TimeSeriesDataset(training_df, future_steps= future_steps, target_column = target_column,p_lag=p_lag), batch_size=batch_size, drop_last=True)
     train_loss_list = []
@@ -50,19 +56,25 @@ def train(epochs,
         for i, data in enumerate(train_data):
             inputs, labels = data
             labels = labels.squeeze(0).float()
+
+            if optimization == 'intervals': 
+                optimizer.zero_grad()
+                outputs = upperboundnet(inputs)
+                loss = upperboundnet.upperquantilecriterion(outputs, labels.squeeze(1))
+                loss.backward()
+                optimizer.step()
+
+                optimizer.zero_grad()
+                outputs = lowerboundnet(inputs)
+                loss = lowerboundnet.lowerquantilecriterion(outputs, labels.squeeze(1))
+                loss.backward()
+                optimizer.step()
+
             optimizer.zero_grad()
             outputs = net(inputs)
             loss = net.criterion(outputs, labels.squeeze(1))
             if loss.item() > 100000: 
                 print('Loss explosion! This might be due to a very small value that is the divided by...')
-                #print('loss')
-                #print(loss)
-                #print('outputs')
-                #print(outputs)
-                #print('target')
-                #print(labels.squeeze(1))
-                #print('input')
-                #print(torch.std(inputs.reshape(batch_size,n_features, p_lag), dim = 2).reshape(batch_size,n_features, 1))
             loss.backward()
             #torch.nn.utils.clip_grad_norm_(net.parameters(), 1)
             optimizer.step()
@@ -122,7 +134,13 @@ def train(epochs,
             outputs_array = outputs.detach().cpu().numpy()
             labels_array = labels.squeeze(2).detach().cpu().numpy()
             [residuals.append(labels_array.item(i) - output_array.item(i)) for i in range(len(output_array))]
-        return net, residuals
+        if optimization == 'intervals': 
+            return lowerboundnet, net, upperboundnet, residuals
+        else: 
+            return net, residuals
     
     else: 
-        return net
+        if optimization == 'intervals': 
+            return lowerboundnet, net, upperboundnet
+        else: 
+            return net

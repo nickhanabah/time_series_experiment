@@ -4,6 +4,7 @@ import torch
 import os 
 import random 
 import numpy as np 
+from pytorch_forecasting.metrics.quantile import QuantileLoss
 
 def set_seed(seed: int = 42) -> None:
     np.random.seed(seed)
@@ -14,7 +15,6 @@ def set_seed(seed: int = 42) -> None:
     torch.backends.cudnn.benchmark = False
     os.environ["PYTHONHASHSEED"] = str(seed)
     print(f"Random seed set as {seed}")
-
 
 class DecompositionLayer(nn.Module):
     def __init__(self, kernel_size, n_features):
@@ -36,10 +36,24 @@ class DecompositionLayer(nn.Module):
         return x_seasonal, x_trend
 
 class ARNet(nn.Module):
-    def __init__(self, p_lag, n_features, future_steps, decomp_kernel_size = 7, batch_size = 8, layers= 1, model:str = 'minmaxlinear'):
+    def __init__(self, p_lag, n_features, future_steps, decomp_kernel_size = 7, batch_size = 8, layers= 1, model:str = 'minmaxlinear', optimization='mse'):
         super(ARNet, self).__init__()
         self.layers = layers
         self.model = model
+        self.optimization = optimization
+
+        if self.optimization == 'mse': 
+            self.criterion = nn.MSELoss()
+
+        elif self.optimization == 'lowerquantile': 
+            self.lowerquantilecriterion = QuantileLoss(quantiles=[0.1])
+
+        elif self.optimization == 'upperquantile': 
+            self.upperquantilecriterion = QuantileLoss(quantiles=[0.9])
+            
+        else: 
+            raise NotImplementedError
+
         if model == 'minmaxlinear': 
             print('MinMaxLinear activated')
             
@@ -100,7 +114,6 @@ class ARNet(nn.Module):
 
     def forward(self, input):
         input = input.float()
-
         if self.model == 'minmaxlinear': 
             new_input = input.reshape(self.batch_size,self.n_features, self.p_lag)
             min_values, _ = torch.min(new_input ,dim=2, keepdim=True)
@@ -109,13 +122,10 @@ class ARNet(nn.Module):
             max_values = max_values.reshape(self.batch_size,self.n_features, 1)
             eps_values = torch.full((self.batch_size,self.n_features, 1), 1)
             scaled_input = (new_input - min_values)/(max_values + min_values + eps_values)
-            
             y_hat = self.input_layer(scaled_input.reshape(self.batch_size, self.p_lag*self.n_features))
-
             rev_min = min_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, 1) 
             rev_max = max_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, 1)
             rev_eps = torch.full((self.batch_size, 1), 1)
-
             y_hat = y_hat * (rev_max - rev_min + rev_eps) + rev_min
             return y_hat  
 
@@ -127,10 +137,8 @@ class ARNet(nn.Module):
             std_values = torch.std(new_input, dim = 2).reshape(self.batch_size,self.n_features, 1)
             eps_values = torch.full((self.batch_size,self.n_features, 1), 1)
             standardized_input = mean_adj_input/(std_values + eps_values)
-            
             if self.layers ==1: 
                 y_hat = self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*self.n_features))
-            
             elif self.layers ==2: 
                 y_hat = self.relu(self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*self.n_features)))
                 y_hat = self.output_layer(y_hat)
@@ -150,22 +158,18 @@ class ARNet(nn.Module):
             if self.layers ==1: 
                 y_hat_season = self.input_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*self.n_features))
                 y_hat_trend = self.input_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*self.n_features))
-            
             elif self.layers ==2: 
                 y_hat_season = self.relu(self.input_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*self.n_features)))
                 y_hat_trend = self.relu(self.input_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*self.n_features)))
-                
                 y_hat_season = self.output_seasonal_layer(y_hat_season)
                 y_hat_trend = self.output_trend_layer(y_hat_trend)
             elif self.layers ==3: 
                 y_hat_season = self.relu(self.input_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*self.n_features)))
                 y_hat_trend = self.relu(self.input_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*self.n_features)))
-                
                 y_hat_season = self.relu(self.hidden_seasonal_layer(y_hat_season))
                 y_hat_trend = self.relu(self.hidden_trend_layer(y_hat_trend))
                 y_hat_season = self.output_seasonal_layer(y_hat_season)
-                y_hat_trend = self.output_trend_layer(y_hat_trend)
-                
+                y_hat_trend = self.output_trend_layer(y_hat_trend)  
             return y_hat_season + y_hat_trend
         
         else: 
