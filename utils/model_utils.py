@@ -103,8 +103,8 @@ class ARNet(nn.Module):
 
         if self.model == 'minmaxlinear': 
             new_input = input.reshape(self.batch_size,self.n_features, self.p_lag)
-            min_values = torch.min(new_input ,dim=2).reshape(self.batch_size,self.n_features, 1)
-            max_values = torch.max(new_input ,dim=2).reshape(self.batch_size,self.n_features, 1)
+            min_values, _ = torch.min(new_input ,dim=2, keepdim=True).reshape(self.batch_size,self.n_features, 1)
+            max_values, _ = torch.max(new_input ,dim=2, keepdim=True).reshape(self.batch_size,self.n_features, 1)
             eps_values = torch.full((self.batch_size,self.n_features, 1), 1)
             scaled_input = (new_input - min_values)/(max_values + min_values + eps_values)
             
