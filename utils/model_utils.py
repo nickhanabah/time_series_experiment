@@ -111,11 +111,10 @@ class ARNet(nn.Module):
             std_values = torch.std(new_input, dim = 2).reshape(self.batch_size,self.n_features, 1)
             print('std_values')
             print(std_values)
-            print('mean_std')
             #print(torch.mean(std_values.squeeze(2), dim=0))
             eps_values = torch.full((self.batch_size,self.n_features, 1), 1e-12)
             standardized_input = mean_adj_input/(std_values + eps_values)
-            #print(standardized_input)
+            print(standardized_input)
             
             if self.layers ==1: 
                 y_hat = self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*self.n_features))
@@ -129,10 +128,16 @@ class ARNet(nn.Module):
                 y_hat = self.relu(self.hidden_layer(y_hat))
                 y_hat = self.output_layer(y_hat)
 
+            print('y_hat after neural network')
+            print(y_hat)
             #rev_mean = torch.mean(mean_values.squeeze(2), dim=0)[self.n_features - 1].reshape(self.batch_size, 1)
             rev_mean = mean_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, 1) 
+            print('rev_mean')
+            print(rev_mean)
             #rev_std = torch.mean(std_values.squeeze(2), dim=0)[self.n_features - 1].reshape(self.batch_size, 1)
             rev_std = std_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, 1)
+            print('rev_std')
+            print(rev_std)
             rev_eps = torch.full((self.batch_size, 1), 1e-12)
 
             print('final y_hat')
