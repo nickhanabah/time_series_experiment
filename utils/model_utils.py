@@ -103,6 +103,13 @@ class ARNet(nn.Module):
                 self.hidden_layer = nn.Linear(math.ceil(p_lag * n_features/1.5), math.ceil(p_lag * n_features/3))
                 self.output_layer = nn.Linear(math.ceil(p_lag * n_features/3), future_steps)
         
+        #todo rlmp 
+        elif model == 'rlmp': 
+            print('RLMP activated')
+            self.input_layer = nn.Linear(p_lag * n_features, p_lag * n_features)
+            self.relu = nn.ReLU()
+            self.output_layer = nn.Linear(p_lag * n_features, future_steps)
+
         else: 
             raise NotImplementedError
   
@@ -171,6 +178,23 @@ class ARNet(nn.Module):
                 y_hat_season = self.output_seasonal_layer(y_hat_season)
                 y_hat_trend = self.output_trend_layer(y_hat_trend)  
             return y_hat_season + y_hat_trend
+        
+        elif self.model == 'rlmp': 
+            new_input = input.reshape(self.batch_size,self.n_features, self.p_lag)
+            mean_values = torch.mean(new_input ,dim=2).reshape(self.batch_size,self.n_features, 1)
+            mean_adj_input = new_input - mean_values
+            std_values = torch.std(new_input, dim = 2).reshape(self.batch_size,self.n_features, 1)
+            eps_values = torch.full((self.batch_size,self.n_features, 1), 1)
+            standardized_input = mean_adj_input/(std_values + eps_values)
+
+            y_hat = self.relu(self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*self.n_features)))
+            y_hat = y_hat.reshape(self.batch_size,self.n_features, self.p_lag) + standardized_input
+            y_hat = self.relu(self.output_layer(y_hat.reshape(self.batch_size, self.p_lag*self.n_features)))
+            rev_mean = mean_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, 1) 
+            rev_std = std_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, 1)
+            rev_eps = torch.full((self.batch_size, 1), 1)
+            y_hat = y_hat * (rev_std + rev_eps) + rev_mean
+            return y_hat
         
         else: 
             raise NotImplementedError
