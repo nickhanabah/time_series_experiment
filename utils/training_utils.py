@@ -60,6 +60,10 @@ def train(epochs,
             if optimization == 'intervals': 
                 optimizer.zero_grad()
                 outputs = upperboundnet(inputs)
+                print('o')
+                print(outputs.shape)
+                print('l')
+                print(labels.squeeze(1).shape)
                 loss = upperboundnet.upperquantilecriterion(outputs, labels.squeeze(1))
                 loss.backward()
                 optimizer.step()
