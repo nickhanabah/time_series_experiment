@@ -16,10 +16,10 @@ def train(epochs,
           batch_size = 8, 
           layers = 1, 
           get_residuals = False, 
-          dlinear = False): 
+          model = 'rlinear'): 
     
     set_seed()
-    net = ARNet(p_lag=p_lag, n_features=n_features, future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, layers = layers, dlinear = dlinear)
+    net = ARNet(p_lag=p_lag, n_features=n_features, future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, layers = layers, model = model)
 
     train_data = DataLoader(TimeSeriesDataset(training_df, future_steps= future_steps, target_column = target_column,p_lag=p_lag), batch_size=batch_size, drop_last=True)
     train_loss_list = []
