@@ -9,10 +9,11 @@ def plot_multistep_forecast(test_data, neural_net, future_steps, number_of_forec
         output = neural_net(inputs)
         if i > number_of_forecasts: 
             break
-        if future_steps > 1: 
-            [output_list.append(out) for out in output.tolist()]
         else: 
-            [output_list.append(out[0]) for out in output.tolist()]
+            if future_steps > 1: 
+                [output_list.append(out) for out in output.tolist()]
+            else: 
+                [output_list.append(out[0]) for out in output.tolist()]
 
         [target_list.append(tar) for tar in labels.squeeze(1,2).tolist()]
 
