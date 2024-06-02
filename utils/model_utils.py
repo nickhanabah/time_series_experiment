@@ -112,7 +112,7 @@ class ARNet(nn.Module):
             #print('std_values')
             #print(std_values)
             #print(torch.mean(std_values.squeeze(2), dim=0))
-            eps_values = torch.full((self.batch_size,self.n_features, 1), 1e-12)
+            eps_values = torch.full((self.batch_size,self.n_features, 1), 1)
             standardized_input = mean_adj_input/(std_values + eps_values)
             #print(standardized_input)
             
@@ -138,7 +138,7 @@ class ARNet(nn.Module):
             rev_std = std_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, 1)
             #print('rev_std')
             #print(rev_std)
-            rev_eps = torch.full((self.batch_size, 1), 1e-12)
+            rev_eps = torch.full((self.batch_size, 1), 1)
 
             #print('final y_hat')
             y_hat = y_hat * (rev_std + rev_eps) + rev_mean
