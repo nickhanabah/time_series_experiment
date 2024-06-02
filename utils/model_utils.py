@@ -107,11 +107,12 @@ class ARNet(nn.Module):
             #print('new input mean')
             #print(mean_adj_input)
             #print('new input std')
-            #print(torch.std(new_input, dim = 2).reshape(self.batch_size,self.n_features, 1))
             std_values = torch.std(new_input, dim = 2).reshape(self.batch_size,self.n_features, 1)
+            print('std_values')
+            print(std_values)
             eps_values = torch.full((self.batch_size,self.n_features, 1), 1e-12)
             standardized_input = mean_adj_input/(std_values + eps_values)
-            #print(standardized_input)
+            print(standardized_input)
             
             if self.layers ==1: 
                 y_hat = self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*self.n_features))
