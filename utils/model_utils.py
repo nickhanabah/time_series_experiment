@@ -112,7 +112,7 @@ class ARNet(nn.Module):
             print(std_values.squeeze(2))
             print('mean_std')
             print(std_values.squeeze(2).shape)
-            print(torch.mean(std_values.squeeze(2), dim=1))
+            print(torch.mean(std_values.squeeze(2), dim=0))
             eps_values = torch.full((self.batch_size,self.n_features, 1), 1e-12)
             standardized_input = mean_adj_input/(std_values + eps_values)
             #print(standardized_input)
