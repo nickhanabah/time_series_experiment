@@ -64,17 +64,13 @@ def train(epochs,
             if optimization == 'intervals': 
                 upperoptimizer.zero_grad()
                 outputs = upperboundnet(inputs)
-                #print('o')
-                #print(outputs.shape)
-                #print('l')
-                #print(labels.squeeze(1).shape)
                 loss = upperboundnet.upperquantilecriterion(outputs.reshape(1,batch_size*future_steps), labels.squeeze(1).reshape(1,batch_size*future_steps))
                 loss.backward()
                 upperoptimizer.step()
 
                 loweroptimizer.zero_grad()
                 outputs = lowerboundnet(inputs)
-                loss = lowerboundnet.lowerquantilecriterion(outputs, labels.squeeze(1))
+                loss = lowerboundnet.lowerquantilecriterion(outputs.reshape(1,batch_size*future_steps), labels.squeeze(1).reshape(1,batch_size*future_steps))
                 loss.backward()
                 loweroptimizer.step()
 
