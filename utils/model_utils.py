@@ -106,7 +106,7 @@ class ARNet(nn.Module):
             min_values, _ = torch.min(new_input ,dim=2, keepdim=True)
             min_values = min_values.reshape(self.batch_size,self.n_features, 1)
             max_values, _ = torch.max(new_input ,dim=2, keepdim=True)
-            max_values = max.reshape(self.batch_size,self.n_features, 1)
+            max_values = max_values.reshape(self.batch_size,self.n_features, 1)
             eps_values = torch.full((self.batch_size,self.n_features, 1), 1)
             scaled_input = (new_input - min_values)/(max_values + min_values + eps_values)
             
