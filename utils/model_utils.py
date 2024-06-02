@@ -114,6 +114,7 @@ class ARNet(nn.Module):
             raise NotImplementedError
   
         self.criterion = nn.MSELoss()
+        self.dropout = nn.Dropout(p=0.2)
         self.p_lag = p_lag
         self.batch_size = batch_size
         self.n_features = n_features
@@ -129,6 +130,7 @@ class ARNet(nn.Module):
             max_values = max_values.reshape(self.batch_size,self.n_features, 1)
             eps_values = torch.full((self.batch_size,self.n_features, 1), 1)
             scaled_input = (new_input - min_values)/(max_values + min_values + eps_values)
+            scaled_input = self.dropout(scaled_input)
             y_hat = self.input_layer(scaled_input.reshape(self.batch_size, self.p_lag*self.n_features))
             rev_min = min_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, 1) 
             rev_max = max_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, 1)
@@ -144,6 +146,7 @@ class ARNet(nn.Module):
             std_values = torch.std(new_input, dim = 2).reshape(self.batch_size,self.n_features, 1)
             eps_values = torch.full((self.batch_size,self.n_features, 1), 1)
             standardized_input = mean_adj_input/(std_values + eps_values)
+            standardized_input = self.dropout(standardized_input)
             if self.layers ==1: 
                 y_hat = self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*self.n_features))
             elif self.layers ==2: 
@@ -162,6 +165,8 @@ class ARNet(nn.Module):
 
         elif self.model == 'dlinear': 
             input_season, input_trend = self.decomp_layer(input)
+            input_season = self.dropout(input_season)
+            input_trend = self.dropout(input_trend)
             if self.layers ==1: 
                 y_hat_season = self.input_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*self.n_features))
                 y_hat_trend = self.input_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*self.n_features))
@@ -186,6 +191,7 @@ class ARNet(nn.Module):
             std_values = torch.std(new_input, dim = 2).reshape(self.batch_size,self.n_features, 1)
             eps_values = torch.full((self.batch_size,self.n_features, 1), 1)
             standardized_input = mean_adj_input/(std_values + eps_values)
+            standardized_input = self.dropout(standardized_input)
 
             y_hat = self.relu(self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*self.n_features)))
             y_hat = y_hat.reshape(self.batch_size,self.n_features, self.p_lag) + standardized_input

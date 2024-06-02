@@ -23,6 +23,8 @@ def plot_multistep_forecast(test_data, neural_net, future_steps, number_of_forec
                 target = target_list[i]
             else: 
                 target.append(target_list[i][len(target_list[i])-1])
+        if future_steps > 0: 
+           alpha = 1 
         if future_steps > 10:
             alpha = 0.5
         if future_steps > 30:
