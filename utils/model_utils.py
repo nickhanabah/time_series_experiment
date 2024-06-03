@@ -108,23 +108,11 @@ class ARNet(nn.Module):
             y_hat = y_hat * (rev_std + rev_eps) + rev_mean
 
         elif self.model == 'dlinear': 
-            #
-            print('input')
-            print(input.shape)
-            print('new_input')
-            print(new_input.shape)
-
             continous_input = new_input[:, 0:(self.n_continous_features), :]
             categorial_input = new_input[:, self.n_continous_features:(self.n_continous_features + self.n_categorial_features), :]
             
             #continous_input tranformation
-            print('Continous_input')
-            print(continous_input)
             input_season, input_trend = self.decomp_layer(continous_input)
-            print('input_season')
-            print(input_season)
-            print('input_trend')
-            print(input_trend)
             
             input_season = torch.cat((input_season, categorial_input), 1)
             input_trend = torch.cat((input_trend, categorial_input), 1)
