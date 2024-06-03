@@ -105,7 +105,7 @@ class ARNet(nn.Module):
             input_trend = self.dropout(input_trend)
             y_hat_season = self.input_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*self.n_features))
             y_hat_trend = self.input_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*self.n_features)) 
-            y_hat = y_hat_season + y_hat_trendd
+            y_hat = y_hat_season + y_hat_trend
         
         elif self.model == 'rlmp': 
             new_input = input.reshape(self.batch_size,self.n_features, self.p_lag)
