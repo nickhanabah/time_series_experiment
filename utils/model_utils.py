@@ -108,26 +108,44 @@ class ARNet(nn.Module):
             y_hat = y_hat * (rev_std + rev_eps) + rev_mean
 
         elif self.model == 'dlinear': 
-            input_season, input_trend = self.decomp_layer(input)
+            continous_input = new_input[:, 0:(self.n_continous_features), :]
+            categorial_input = new_input[:, self.n_continous_features:(self.n_continous_features + self.n_categorial_features), :]
+            
+            #continous_input tranformation
+            input_season, input_trend = self.decomp_layer(continous_input)
+            
+            input_season = torch.cat((input_season, categorial_input), 1)
+            input_trend = torch.cat((input_trend, categorial_input), 1)
             input_season = self.dropout(input_season)
             input_trend = self.dropout(input_trend)
-            y_hat_season = self.input_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*self.n_features))
-            y_hat_trend = self.input_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*self.n_features)) 
+            y_hat_season = self.input_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
+            y_hat_trend = self.input_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features))) 
             y_hat = y_hat_season + y_hat_trend
         
         elif self.model == 'rlmp': 
-            new_input = input.reshape(self.batch_size,self.n_features, self.p_lag)
-            mean_values = torch.mean(new_input ,dim=2).reshape(self.batch_size,self.n_features, 1)
-            mean_adj_input = new_input - mean_values
-            std_values = torch.std(new_input, dim = 2).reshape(self.batch_size,self.n_features, 1)
-            eps_values = torch.full((self.batch_size,self.n_features, 1), 1)
+            new_input = input.reshape(self.batch_size,(self.n_continous_features + self.n_categorial_features), self.p_lag)
+            continous_input = new_input[:, 0:(self.n_continous_features), :]
+            categorial_input = new_input[:, self.n_continous_features:(self.n_continous_features + self.n_categorial_features), :]
+
+            #continous_input tranformation
+            mean_values = torch.mean(continous_input ,dim=2).reshape(self.batch_size,self.n_continous_features, 1)
+            mean_adj_input = continous_input - mean_values
+            std_values = torch.std(continous_input, dim = 2).reshape(self.batch_size,self.n_continous_features, 1)
+            eps_values = torch.full((self.batch_size,self.n_continous_features, 1), 1)
             standardized_input = mean_adj_input/(std_values + eps_values)
+
+            # put all parts together again
+            standardized_input = torch.cat((standardized_input, categorial_input), 1)
             standardized_input = self.dropout(standardized_input)
-            y_hat = self.relu(self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*self.n_features)))
-            y_hat = y_hat.reshape(self.batch_size,self.n_features, self.p_lag) + standardized_input
-            y_hat = self.output_layer(y_hat.reshape(self.batch_size, self.p_lag*self.n_features))
-            rev_mean = mean_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, 1) 
-            rev_std = std_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, 1)
+            y_hat = self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
+
+            #prediction part
+            standardized_input = self.dropout(standardized_input)
+            y_hat = self.relu(self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features))))
+            y_hat = y_hat.reshape(self.batch_size,(self.n_continous_features + self.n_categorial_features), self.p_lag) + standardized_input
+            y_hat = self.output_layer(y_hat.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
+            rev_mean = mean_values.squeeze(2)[:,self.n_continous_features - 1].reshape(self.batch_size, 1) 
+            rev_std = std_values.squeeze(2)[:,self.n_continous_features - 1].reshape(self.batch_size, 1)
             rev_eps = torch.full((self.batch_size, 1), 1)
             y_hat = y_hat * (rev_std + rev_eps) + rev_mean
             
