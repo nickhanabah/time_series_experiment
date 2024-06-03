@@ -14,19 +14,13 @@ def train(epochs,
           learning_rate=1.e-4, 
           decomp_kernel_size= 7, 
           batch_size = 8, 
-          layers = 1, 
+          #layers = 1, 
           get_residuals = False, 
           model = 'rlinear', 
           optimization = 'intervals'): 
     
     set_seed()
-    if optimization == 'intervals': 
-        lowerboundnet = ARNet(p_lag=p_lag, n_features=n_features, future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, layers = layers, model = model, optimization='lowerquantile')
-        net = ARNet(p_lag=p_lag, n_features=n_features, future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, layers = layers, model = model, optimization='mse')
-        upperboundnet = ARNet(p_lag=p_lag, n_features=n_features, future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, layers = layers, model = model, optimization='upperquantile')
-    else:    
-        net = ARNet(p_lag=p_lag, n_features=n_features, future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, layers = layers, model = model)
-
+    net = ARNet(p_lag=p_lag, n_features=n_features, future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, model = model)
     train_data = DataLoader(TimeSeriesDataset(training_df, future_steps= future_steps, target_column = target_column,p_lag=p_lag), batch_size=batch_size, drop_last=True)
     train_loss_list = []
     val_data = DataLoader(TimeSeriesDataset(validation_df,future_steps= future_steps, target_column = target_column,p_lag=p_lag), batch_size=batch_size, drop_last=True)
@@ -34,13 +28,8 @@ def train(epochs,
 
     torch.set_grad_enabled(True)
     optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
-    if optimization == 'intervals': 
-        loweroptimizer = torch.optim.Adam(lowerboundnet.parameters(), lr=learning_rate)
-        upperoptimizer = torch.optim.Adam(upperboundnet.parameters(), lr=learning_rate)
-
 
     for epoch in range(epochs): 
-
         train_counter = 0
         val_counter = 0
         running_train_loss = 0.
@@ -60,19 +49,6 @@ def train(epochs,
         for i, data in enumerate(train_data):
             inputs, labels = data
             labels = labels.squeeze(0).float()
-
-            if optimization == 'intervals': 
-                upperoptimizer.zero_grad()
-                outputs = upperboundnet(inputs)
-                loss = upperboundnet.upperquantilecriterion(outputs.reshape(1,batch_size*future_steps), labels.squeeze(1).reshape(1,batch_size*future_steps))
-                loss.backward()
-                upperoptimizer.step()
-
-                loweroptimizer.zero_grad()
-                outputs = lowerboundnet(inputs)
-                loss = lowerboundnet.lowerquantilecriterion(outputs.reshape(1,batch_size*future_steps), labels.squeeze(1).reshape(1,batch_size*future_steps))
-                loss.backward()
-                loweroptimizer.step()
 
             optimizer.zero_grad()
             outputs = net(inputs)
@@ -138,13 +114,7 @@ def train(epochs,
             outputs_array = outputs.detach().cpu().numpy()
             labels_array = labels.squeeze(2).detach().cpu().numpy()
             [residuals.append(labels_array.item(i) - output_array.item(i)) for i in range(len(output_array))]
-        if optimization == 'intervals': 
-            return lowerboundnet, net, upperboundnet, residuals
-        else: 
-            return net, residuals
+        return net, residuals
     
     else: 
-        if optimization == 'intervals': 
-            return lowerboundnet, net, upperboundnet
-        else: 
-            return net
+        return net
