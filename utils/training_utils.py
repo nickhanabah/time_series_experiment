@@ -98,9 +98,9 @@ def train(epochs,
             print("")
             print("Val metrics: -------")
             print(f"Running (validation) loss is {running_val_loss/val_counter}.")
-            print(f"Validation MAE is {running_val_mae/train_counter}.")
-            print(f"Validation MSE is {running_val_mse/train_counter}.")
-            print(f"Validation MAPE is {running_val_mape/train_counter}.")
+            print(f"Validation MAE is {running_val_mae/val_counter}.")
+            print(f"Validation MSE is {running_val_mse/val_counter}.")
+            print(f"Validation MAPE is {running_val_mape/val_counter}.")
             print("---------------------------")
     
     if get_residuals: 

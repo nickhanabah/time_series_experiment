@@ -38,17 +38,18 @@ class DecompositionLayer(nn.Module):
 class ARNet(nn.Module):
     def __init__(   self, 
                     p_lag, 
-                    n_features, 
+                    n_continous_features,
+                    n_categorial_features, 
                     future_steps, 
                     decomp_kernel_size = 7, 
                     batch_size = 8, 
-                    #layers= 1, 
                     model:str = 'minmaxlinear', 
                     optimization='mse'):
         
         super(ARNet, self).__init__()
         self.model = model
         self.optimization = optimization
+        self.n_categorial_features = n_categorial_features
 
         if self.optimization == 'mse': 
             self.criterion = nn.MSELoss()
@@ -58,19 +59,19 @@ class ARNet(nn.Module):
 
         if model == 'dlinear': 
             print('Dlinear activated')
-            self.decomp_layer = DecompositionLayer(decomp_kernel_size, n_features)
-            self.input_trend_layer = nn.Linear(p_lag * n_features, future_steps)
-            self.input_seasonal_layer = nn.Linear(p_lag * n_features, future_steps)
+            self.decomp_layer = DecompositionLayer(decomp_kernel_size, n_continous_features)
+            self.input_trend_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), future_steps)
+            self.input_seasonal_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), future_steps)
         
         elif model == 'rlinear': 
             print('Rlinear activated')
-            self.input_layer = nn.Linear(p_lag * n_features, future_steps)
+            self.input_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), future_steps)
         
         elif model == 'rlmp': 
             print('RLMP activated')
-            self.input_layer = nn.Linear(p_lag * n_features, p_lag * n_features)
+            self.input_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), p_lag * (n_continous_features + n_categorial_features))
             self.relu = nn.ReLU()
-            self.output_layer = nn.Linear(p_lag * n_features, future_steps)
+            self.output_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), future_steps)
 
         else: 
             raise NotImplementedError
@@ -79,23 +80,35 @@ class ARNet(nn.Module):
         self.dropout = nn.Dropout(p=0.2)
         self.p_lag = p_lag
         self.batch_size = batch_size
-        self.n_features = n_features
+        self.n_continous_features = n_continous_features
         self.future_steps = future_steps
 
     def forward(self, input):
         input = input.float()
 
         if self.model == 'rlinear': 
-            new_input = input.reshape(self.batch_size,self.n_features, self.p_lag)
-            mean_values = torch.mean(new_input ,dim=2).reshape(self.batch_size,self.n_features, 1)
+            new_input = input.reshape(self.batch_size,(self.n_continous_features + self.n_categorial_features), self.p_lag)
+            print('original input')
+            print(new_input.shape)
+            continous_input = input[:, 0:(self.n_continous_features-1), self.p_lag]
+            categorial_input = input[:, self.n_continous_features:(self.n_continous_features + self.n_categorial_features-1), self.p_lag]
+
+            #continous_input tranformation
+            mean_values = torch.mean(continous_input ,dim=2).reshape(self.batch_size,self.n_continous_features, 1)
             mean_adj_input = new_input - mean_values
-            std_values = torch.std(new_input, dim = 2).reshape(self.batch_size,self.n_features, 1)
-            eps_values = torch.full((self.batch_size,self.n_features, 1), 1)
+            std_values = torch.std(new_input, dim = 2).reshape(self.batch_size,self.n_continous_features, 1)
+            eps_values = torch.full((self.batch_size,self.n_continous_features, 1), 1)
             standardized_input = mean_adj_input/(std_values + eps_values)
+
+            # put all parts together again
+            standardized_input = torch.cat((standardized_input, categorial_input), 1)
+            print('input put together')
+            print(standardized_input.shape)
+
             standardized_input = self.dropout(standardized_input)
-            y_hat = self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*self.n_features))
-            rev_mean = mean_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, 1) 
-            rev_std = std_values.squeeze(2)[:,self.n_features - 1].reshape(self.batch_size, 1)
+            y_hat = self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
+            rev_mean = mean_values.squeeze(2)[:,self.n_continous_features - 1].reshape(self.batch_size, 1) 
+            rev_std = std_values.squeeze(2)[:,self.n_continous_features - 1].reshape(self.batch_size, 1)
             rev_eps = torch.full((self.batch_size, 1), 1)
             y_hat = y_hat * (rev_std + rev_eps) + rev_mean
 
