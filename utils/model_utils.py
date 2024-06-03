@@ -108,6 +108,7 @@ class ARNet(nn.Module):
             y_hat = y_hat * (rev_std + rev_eps) + rev_mean
 
         elif self.model == 'dlinear': 
+            #
             print('input')
             print(input.shape)
             print('new_input')
