@@ -10,20 +10,19 @@ def train(epochs,
           future_steps, 
           n_features, training_df, 
           validation_df, 
+          feature_columns, 
           target_column = ['OT'], 
           learning_rate=1.e-4, 
           decomp_kernel_size= 7, 
           batch_size = 8, 
-          #layers = 1, 
           get_residuals = False, 
-          model = 'rlinear', 
-          optimization = 'intervals'): 
+          model = 'rlinear'): 
     
     set_seed()
     net = ARNet(p_lag=p_lag, n_features=n_features, future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, model = model)
-    train_data = DataLoader(TimeSeriesDataset(training_df, future_steps= future_steps, target_column = target_column,p_lag=p_lag), batch_size=batch_size, drop_last=True)
+    train_data = DataLoader(TimeSeriesDataset(training_df, future_steps= future_steps,feature_columns = feature_columns, target_column = target_column,p_lag=p_lag), batch_size=batch_size, drop_last=True)
     train_loss_list = []
-    val_data = DataLoader(TimeSeriesDataset(validation_df,future_steps= future_steps, target_column = target_column,p_lag=p_lag), batch_size=batch_size, drop_last=True)
+    val_data = DataLoader(TimeSeriesDataset(validation_df,future_steps= future_steps,feature_columns= feature_columns, target_column = target_column,p_lag=p_lag), batch_size=batch_size, drop_last=True)
     val_loss_list = []
 
     torch.set_grad_enabled(True)
