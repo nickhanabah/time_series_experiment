@@ -18,12 +18,12 @@ def transform_date_column_and_drop_it(df, date_column_name:str, remain_same = Tr
         df.drop(date_column_name, axis = 1, inplace=True)
     return df
 
-def split_dataset(df,  train_split_month=12, val_split_month=16, test_split_month=20): 
+def split_dataset(df,  train_split_month=12, val_split_month=16, test_split_month=20, remain_same = True): 
     data = df.copy()
     data['date'] = pd.to_datetime(data['date'])
-    training_df = transform_date_column_and_drop_it(data[data['date'] < data['date'].min() + pd.DateOffset(months=train_split_month)],'date')
-    val_df = transform_date_column_and_drop_it(data[data['date'] > data['date'].min() + pd.DateOffset(months=train_split_month)][data['date'] < data['date'].min() + pd.DateOffset(months=val_split_month)],'date')
-    test_df = transform_date_column_and_drop_it(data[data['date'] > data['date'].min() + pd.DateOffset(months=val_split_month)][data['date'] < data['date'].min() + pd.DateOffset(months=test_split_month)],'date')
+    training_df = transform_date_column_and_drop_it(data[data['date'] < data['date'].min() + pd.DateOffset(months=train_split_month)],'date', remain_same)
+    val_df = transform_date_column_and_drop_it(data[data['date'] > data['date'].min() + pd.DateOffset(months=train_split_month)][data['date'] < data['date'].min() + pd.DateOffset(months=val_split_month)],'date', remain_same)
+    test_df = transform_date_column_and_drop_it(data[data['date'] > data['date'].min() + pd.DateOffset(months=val_split_month)][data['date'] < data['date'].min() + pd.DateOffset(months=test_split_month)],'date', remain_same)
     return training_df, val_df, test_df
 
 class TimeSeriesDataset(Dataset):
