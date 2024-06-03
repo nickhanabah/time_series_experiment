@@ -88,13 +88,10 @@ class ARNet(nn.Module):
 
         if self.model == 'rlinear': 
             new_input = input.reshape(self.batch_size,(self.n_continous_features + self.n_categorial_features), self.p_lag)
-            print('original input')
-            print(new_input.shape)
             continous_input = new_input[:, 0:(self.n_continous_features), :]
             categorial_input = new_input[:, self.n_continous_features:(self.n_continous_features + self.n_categorial_features), :]
 
             #continous_input tranformation
-            print(continous_input.shape)
             mean_values = torch.mean(continous_input ,dim=2).reshape(self.batch_size,self.n_continous_features, 1)
             mean_adj_input = continous_input - mean_values
             std_values = torch.std(continous_input, dim = 2).reshape(self.batch_size,self.n_continous_features, 1)
@@ -103,9 +100,6 @@ class ARNet(nn.Module):
 
             # put all parts together again
             standardized_input = torch.cat((standardized_input, categorial_input), 1)
-            print('input put together')
-            print(standardized_input.shape)
-
             standardized_input = self.dropout(standardized_input)
             y_hat = self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
             rev_mean = mean_values.squeeze(2)[:,self.n_continous_features - 1].reshape(self.batch_size, 1) 
