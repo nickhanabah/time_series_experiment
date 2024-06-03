@@ -67,8 +67,8 @@ class ARNet(nn.Module):
             print('Rlinear activated')
             self.input_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), future_steps)
         
-        elif model == 'rlmp': 
-            print('RLMP activated')
+        elif model == 'rmlp': 
+            print('RMLP activated')
             self.input_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), p_lag * (n_continous_features + n_categorial_features))
             self.relu = nn.ReLU()
             self.output_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), future_steps)
@@ -122,7 +122,7 @@ class ARNet(nn.Module):
             y_hat_trend = self.input_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features))) 
             y_hat = y_hat_season + y_hat_trend
         
-        elif self.model == 'rlmp': 
+        elif self.model == 'rmlp': 
             new_input = input.reshape(self.batch_size,(self.n_continous_features + self.n_categorial_features), self.p_lag)
             continous_input = new_input[:, 0:(self.n_continous_features), :]
             categorial_input = new_input[:, self.n_continous_features:(self.n_continous_features + self.n_categorial_features), :]
