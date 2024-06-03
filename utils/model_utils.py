@@ -96,7 +96,7 @@ class ARNet(nn.Module):
             #continous_input tranformation
             print(continous_input.shape)
             mean_values = torch.mean(continous_input ,dim=2).reshape(self.batch_size,self.n_continous_features, 1)
-            mean_adj_input = new_input - mean_values
+            mean_adj_input = continous_input - mean_values
             std_values = torch.std(new_input, dim = 2).reshape(self.batch_size,self.n_continous_features, 1)
             eps_values = torch.full((self.batch_size,self.n_continous_features, 1), 1)
             standardized_input = mean_adj_input/(std_values + eps_values)
