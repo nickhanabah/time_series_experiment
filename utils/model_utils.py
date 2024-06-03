@@ -85,9 +85,9 @@ class ARNet(nn.Module):
 
     def forward(self, input):
         input = input.float()
+        new_input = input.reshape(self.batch_size,(self.n_continous_features + self.n_categorial_features), self.p_lag)
 
         if self.model == 'rlinear': 
-            new_input = input.reshape(self.batch_size,(self.n_continous_features + self.n_categorial_features), self.p_lag)
             continous_input = new_input[:, 0:(self.n_continous_features), :]
             categorial_input = new_input[:, self.n_continous_features:(self.n_continous_features + self.n_categorial_features), :]
 
@@ -123,7 +123,6 @@ class ARNet(nn.Module):
             y_hat = y_hat_season + y_hat_trend
         
         elif self.model == 'rmlp': 
-            new_input = input.reshape(self.batch_size,(self.n_continous_features + self.n_categorial_features), self.p_lag)
             continous_input = new_input[:, 0:(self.n_continous_features), :]
             categorial_input = new_input[:, self.n_continous_features:(self.n_continous_features + self.n_categorial_features), :]
 
