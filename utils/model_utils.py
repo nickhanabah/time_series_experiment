@@ -118,7 +118,13 @@ class ARNet(nn.Module):
             categorial_input = new_input[:, self.n_continous_features:(self.n_continous_features + self.n_categorial_features), :]
             
             #continous_input tranformation
+            print('Continous_input')
+            print(continous_input)
             input_season, input_trend = self.decomp_layer(continous_input)
+            print('input_season')
+            print(input_season)
+            print('input_trend')
+            print(input_trend)
             
             input_season = torch.cat((input_season, categorial_input), 1)
             input_trend = torch.cat((input_trend, categorial_input), 1)
