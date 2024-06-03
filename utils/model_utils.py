@@ -108,6 +108,11 @@ class ARNet(nn.Module):
             y_hat = y_hat * (rev_std + rev_eps) + rev_mean
 
         elif self.model == 'dlinear': 
+            print('input')
+            print(input.shape)
+            print('new_input')
+            print(new_input.shape)
+
             continous_input = new_input[:, 0:(self.n_continous_features), :]
             categorial_input = new_input[:, self.n_continous_features:(self.n_continous_features + self.n_categorial_features), :]
             
