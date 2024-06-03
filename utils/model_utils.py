@@ -90,8 +90,8 @@ class ARNet(nn.Module):
             new_input = input.reshape(self.batch_size,(self.n_continous_features + self.n_categorial_features), self.p_lag)
             print('original input')
             print(new_input.shape)
-            continous_input = input[:, 0:(self.n_continous_features-1), 0:(self.p_lag-1)]
-            categorial_input = input[:, self.n_continous_features:(self.n_continous_features + self.n_categorial_features-1), 0:(self.p_lag-1)]
+            continous_input = new_input[:, 0:(self.n_continous_features-1), :]
+            categorial_input = new_input[:, self.n_continous_features:(self.n_continous_features + self.n_categorial_features-1), :]
 
             #continous_input tranformation
             mean_values = torch.mean(continous_input ,dim=2).reshape(self.batch_size,self.n_continous_features, 1)
