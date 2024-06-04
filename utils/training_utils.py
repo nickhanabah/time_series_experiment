@@ -81,6 +81,8 @@ def train(epochs,
 
             optimizer.zero_grad()
             outputs = net(inputs)
+            print(outputs)
+            print(outputs(inputs))
             if density: 
                 loss = compute_loss(outputs, inputs, labels.squeeze(1)) 
             else: 
