@@ -55,6 +55,10 @@ def train(epochs,
             optimizer.zero_grad()
             outputs = net(inputs)
             if modelling_task == 'multivariate': 
+                print(outputs)
+                print(outputs.shape)
+                print(labels)
+                print(labels.shape)
                 loss = net.criterion(outputs, labels.reshape(outputs.shape))
             else: 
                 loss = net.criterion(outputs, labels.squeeze(1))
