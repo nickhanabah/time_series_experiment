@@ -57,8 +57,7 @@ def train(epochs,
             if modelling_task == 'multivariate': 
                 #print(outputs)
                 #print(outputs.shape)
-                print(labels[:, 0:(n_continous_features), :])
-                print(labels[:, 0:(n_continous_features), :].shape)
+                print(labels.shape)
                 loss = net.criterion(outputs, labels[:, 0:(n_continous_features), :].reshape(outputs.shape))
             else: 
                 loss = net.criterion(outputs, labels.squeeze(1))
