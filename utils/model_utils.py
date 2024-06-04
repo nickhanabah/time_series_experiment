@@ -131,6 +131,8 @@ class ARNet(nn.Module):
             elif self.modelling_task == 'multivariate': 
                 rev_mean_l = []
                 for tensor in mean_values.reshape(self.batch_size,self.n_continous_features): 
+                    print(tensor)
+                    [print(i) for i in tensor]
                     [rev_mean_l.append(torch.full((self.future_steps,1), i).reshape(self.future_steps)) for i in tensor]
                 rev_mean = torch.cat(rev_mean_l).reshape(self.batch_size,self.n_continous_features* self.future_steps) 
                 rev_std_l = []
