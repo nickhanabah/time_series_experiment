@@ -57,8 +57,6 @@ def train(epochs,
             if modelling_task == 'multivariate': 
                 loss = net.criterion(outputs, labels[:, 0:(n_continous_features), :].reshape(outputs.shape))
             else: 
-                print(outputs.shape)
-                print(labels.shape)
                 loss = net.criterion(outputs, labels.squeeze(1))
             if loss.item() > 100000: 
                 print('Loss explosion! This might be due to a very small value that is the divided by...')
