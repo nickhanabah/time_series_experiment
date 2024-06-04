@@ -117,7 +117,11 @@ class ARNet(nn.Module):
             standardized_input = torch.cat((standardized_input, categorial_input), 1)
             standardized_input = self.dropout(standardized_input)
             y_hat = self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
-            
+            print('standardized_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features))')
+            print(standardized_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
+
+            print('y_hat')
+            print(y_hat)
             if self.modelling_task == 'univariate': 
                 rev_mean = mean_values.squeeze(2)[:,self.n_continous_features - 1].reshape(self.batch_size, 1) 
                 rev_std = std_values.squeeze(2)[:,self.n_continous_features - 1].reshape(self.batch_size, 1)
@@ -129,8 +133,8 @@ class ARNet(nn.Module):
             else: 
                 NotImplementedError
             
-            print(rev_mean)
-            print('rev_shape')
+            print(rev_std)
+            print('rev_std.shape')
             print(rev_std.shape)
             print('y_hat')
             print(y_hat.shape)
