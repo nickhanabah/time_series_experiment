@@ -119,11 +119,11 @@ class ARNet(nn.Module):
             standardized_input = torch.cat((standardized_input, categorial_input), 1)
             standardized_input = self.dropout(standardized_input)
             y_hat = self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
-            print('standardized_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features))')
-            print(standardized_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
+            #print('standardized_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features))')
+            #print(standardized_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
 
-            print('y_hat')
-            print(y_hat)
+            #print('y_hat')
+            #print(y_hat)
             if self.modelling_task == 'univariate': 
                 rev_mean = mean_values.squeeze(2)[:,self.n_continous_features - 1].reshape(self.batch_size, 1) 
                 rev_std = std_values.squeeze(2)[:,self.n_continous_features - 1].reshape(self.batch_size, 1)
@@ -135,6 +135,8 @@ class ARNet(nn.Module):
                 rev_mean = torch.cat(rev_mean_l).reshape(self.batch_size,self.n_continous_features* self.future_steps) 
                 rev_std_l = []
                 for tensor in std_values.reshape(self.batch_size,self.n_continous_features): 
+                    print(tensor)
+                    [print(i) for i in tensor]
                     [rev_std_l.append(torch.full((self.future_steps,1), i).reshape(self.future_steps)) for i in tensor]
                 std_values = torch.cat(rev_std_l).reshape(self.batch_size,self.n_continous_features* self.future_steps) 
                 rev_eps = torch.full((self.batch_size, self.n_continous_features* self.future_steps), 1)
