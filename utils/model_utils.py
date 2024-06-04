@@ -101,6 +101,8 @@ class ARNet(nn.Module):
     def forward(self, input):
         input = input.float()
         new_input = input.reshape(self.batch_size,(self.n_continous_features + self.n_categorial_features), self.p_lag)
+        print('new_input')
+        print(new_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
 
         if self.model == 'rlinear': 
             continous_input = new_input[:, 0:(self.n_continous_features), :]
