@@ -92,7 +92,7 @@ def train(epochs,
             loss.backward()
             #torch.nn.utils.clip_grad_norm_(net.parameters(), 1)
             optimizer.step()
-            if density:
+            if density == False:
                 outputs_array = outputs.detach().cpu().numpy()
                 labels_array = labels.squeeze(2).detach().cpu().numpy()
                 mae, mse, mape= metric(pred=outputs_array, true=labels_array)
@@ -106,7 +106,7 @@ def train(epochs,
                 print(f"Current (running) training loss at iteration {train_counter} : {running_train_loss/train_counter}")
         train_loss_list.append(running_train_loss/train_counter)
             
-        if density: 
+        if density == False: 
             for i, data in enumerate(val_data):
                 inputs, test_labels = data
                 test_labels = test_labels.squeeze(0).float()
