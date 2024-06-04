@@ -27,18 +27,23 @@ def split_dataset(df,  train_split_month=12, val_split_month=16, test_split_mont
     return training_df, val_df, test_df
 
 class TimeSeriesDataset(Dataset):
-    def __init__(self,df, target_column,feature_columns,future_steps, p_lag=0):
+    def __init__(self,df, target_column,feature_columns,future_steps, p_lag, modelling_task = 'univatiate'):
         self.df = df
         self.p_lag = p_lag
         self.len_df_minus_lag = len(self.df) - p_lag - future_steps
         self.target_column = target_column
         self.future_steps = future_steps
         self.feature_columns = feature_columns
+        self.modelling_task = modelling_task
 
     def __len__(self):
         return self.len_df_minus_lag
 
     def __getitem__(self, idx):
         input_p_lag = torch.tensor(self.df[self.feature_columns].iloc[(idx):(idx + self.p_lag),:].astype(float).to_numpy().transpose().reshape(1,-1), requires_grad=True)
-        target = torch.tensor(self.df[self.target_column].iloc[(idx + self.p_lag): (idx + self.p_lag + self.future_steps),:].astype(float).to_numpy()).reshape(1,-1)
+        if self.modelling_task == 'univatiate': 
+            target = torch.tensor(self.df[self.target_column].iloc[(idx + self.p_lag): (idx + self.p_lag + self.future_steps),:].astype(float).to_numpy()).reshape(1,-1)
+        else: 
+            target = torch.tensor(self.df[self.feature_columns].iloc[(idx + self.p_lag): (idx + self.p_lag + self.future_steps),:].astype(float).to_numpy()).reshape(1,-1)
+
         return input_p_lag, target

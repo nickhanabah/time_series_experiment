@@ -23,9 +23,9 @@ def train(epochs,
     
     set_seed()
     net = ARNet(p_lag=p_lag, n_continous_features= n_continous_features, n_categorial_features = n_categorial_features,future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, model = model, modelling_task = modelling_task)
-    train_data = DataLoader(TimeSeriesDataset(training_df, future_steps= future_steps, feature_columns = feature_columns, target_column = target_column,p_lag=p_lag), batch_size=batch_size, drop_last=True)
+    train_data = DataLoader(TimeSeriesDataset(training_df, future_steps= future_steps, feature_columns = feature_columns, target_column = target_column,p_lag=p_lag, modelling_task = modelling_task), batch_size=batch_size, drop_last=True)
     train_loss_list = []
-    val_data = DataLoader(TimeSeriesDataset(validation_df,future_steps= future_steps,feature_columns= feature_columns, target_column = target_column,p_lag=p_lag), batch_size=batch_size, drop_last=True)
+    val_data = DataLoader(TimeSeriesDataset(validation_df,future_steps= future_steps,feature_columns= feature_columns, target_column = target_column,p_lag=p_lag, modelling_task = modelling_task), batch_size=batch_size, drop_last=True)
     val_loss_list = []
 
     torch.set_grad_enabled(True)
