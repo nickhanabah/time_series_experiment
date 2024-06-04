@@ -45,13 +45,15 @@ class ARNet(nn.Module):
                     batch_size:int = 8, 
                     model:str = 'rlinear', 
                     optimization:str = 'mse', 
-                    modelling_task:str = 'univariate'):
+                    modelling_task:str = 'univariate', 
+                    density:bool = False):
         
         super(ARNet, self).__init__()
         self.model = model
         self.optimization = optimization
         self.n_categorial_features = n_categorial_features
         self.modelling_task = modelling_task
+        self.density = density
 
         if self.modelling_task == 'univariate': 
             print('Univatiate modelling')
@@ -75,18 +77,39 @@ class ARNet(nn.Module):
         if model == 'dlinear': 
             print('Dlinear activated')
             self.decomp_layer = DecompositionLayer(decomp_kernel_size, n_continous_features)
-            self.input_trend_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), future_steps * self.inflation_factor)
-            self.input_seasonal_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), future_steps * self.inflation_factor)
+            if self.density:
+                print('Density to be estimated')
+                self.mu_trend_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), 1)
+                self.mu_trend_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), 1)
+                self.std_seasonal_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), 1)
+                self.std_seasonal_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), 1)
+            else: 
+                print('Points to be estimated')
+                self.input_trend_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), future_steps * self.inflation_factor)
+                self.input_seasonal_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), future_steps * self.inflation_factor)
 
         elif model == 'rlinear': 
             print('Rlinear activated')
+            #if self.density:
+            #    print('Density to be estimated')
+            #    self.mu_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), 1)
+            #    self.std_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), 1)
+            #else: 
+            print('Points to be estimated')
             self.input_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), future_steps * self.inflation_factor)
         
         elif model == 'rmlp': 
             print('RMLP activated')
             self.input_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), p_lag * (n_continous_features + n_categorial_features))
             self.relu = nn.ReLU()
+            #if self.density:
+            #    print('Density to be estimated')
+            #    self.mu_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), 1)
+            #    self.std_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), 1)
+            #else: 
+            print('Points to be estimated')
             self.output_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), future_steps * self.inflation_factor)
+
 
         else: 
             raise NotImplementedError
@@ -118,6 +141,7 @@ class ARNet(nn.Module):
             # put all parts together again
             standardized_input = torch.cat((standardized_input, categorial_input), 1)
             standardized_input = self.dropout(standardized_input)
+
             y_hat = self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
 
             if self.modelling_task == 'univariate': 
@@ -145,14 +169,20 @@ class ARNet(nn.Module):
             
             #continous_input tranformation
             input_season, input_trend = self.decomp_layer(continous_input)
-            
             input_season = torch.cat((input_season, categorial_input), 1)
             input_trend = torch.cat((input_trend, categorial_input), 1)
             input_season = self.dropout(input_season)
             input_trend = self.dropout(input_trend)
-            y_hat_season = self.input_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
-            y_hat_trend = self.input_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features))) 
-            y_hat = y_hat_season + y_hat_trend
+                
+            if self.density: 
+                mu_trend = self.mu_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
+                std_trend = self.std_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
+                mu_season =self.mu_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
+                std_season =self.std_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
+            else: 
+                y_hat_season = self.input_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
+                y_hat_trend = self.input_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
+                y_hat = y_hat_season + y_hat_trend
         
         elif self.model == 'rmlp': 
             continous_input = new_input[:, 0:(self.n_continous_features), :]
@@ -192,10 +222,13 @@ class ARNet(nn.Module):
                 rev_eps = torch.full((self.batch_size, self.n_continous_features* self.future_steps), 1)
             else: 
                 NotImplementedError
-                
+
             y_hat = y_hat * (rev_std + rev_eps) + rev_mean
             
         else: 
             raise NotImplementedError
         
-        return y_hat
+        if self.density and self.model == 'dlinear': 
+            return torch.distributions.Normal((mu_trend + mu_season), (std_trend + std_season))
+        else: 
+            return y_hat
