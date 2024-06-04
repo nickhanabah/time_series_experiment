@@ -231,7 +231,6 @@ class ARNet(nn.Module):
         
         if self.density and self.model == 'dlinear': 
             normal_object = torch.distributions.normal.Normal((mu_trend + mu_season), (self.sofplus(std_trend) + self.sofplus(std_season)))
-            print(normal_object)
             return normal_object
         else: 
             return y_hat
