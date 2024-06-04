@@ -80,8 +80,8 @@ class ARNet(nn.Module):
             if self.density:
                 print('Density to be estimated')
                 self.mu_trend_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), 1)
-                self.mu_trend_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), 1)
-                self.std_seasonal_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), 1)
+                self.mu_seasonal_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), 1)
+                self.std_trend_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), 1)
                 self.std_seasonal_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), 1)
             else: 
                 print('Points to be estimated')
