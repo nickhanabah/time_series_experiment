@@ -17,7 +17,7 @@ def train(epochs,
           learning_rate=1.e-4, 
           decomp_kernel_size= 7, 
           batch_size = 8, 
-          get_residuals = False, 
+          #get_residuals = False, 
           model = 'rlinear', 
           modelling_task = 'univatiate'): 
     
@@ -54,7 +54,10 @@ def train(epochs,
 
             optimizer.zero_grad()
             outputs = net(inputs)
-            loss = net.criterion(outputs, labels.squeeze(1))
+            if modelling_task == 'multivariate': 
+                loss = net.criterion(outputs, labels.reshape(outputs.shape))
+            else: 
+                loss = net.criterion(outputs, labels.squeeze(1))
             if loss.item() > 100000: 
                 print('Loss explosion! This might be due to a very small value that is the divided by...')
             loss.backward()
@@ -77,7 +80,11 @@ def train(epochs,
             inputs, test_labels = data
             test_labels = test_labels.squeeze(0).float()
             output = net(inputs)
-            val_loss = net.criterion(output, test_labels.squeeze(1))
+            if modelling_task == 'multivariate': 
+                val_loss = net.criterion(outputs, test_labels.reshape(outputs.shape))
+            else: 
+                val_loss = net.criterion(output, test_labels.squeeze(1))
+
             running_val_loss += val_loss.item()
 
             output_array = output.detach().cpu().numpy()
@@ -106,17 +113,17 @@ def train(epochs,
             print(f"Validation MAPE is {running_val_mape/val_counter}.")
             print("---------------------------")
     
-    if get_residuals: 
-        residuals = []
-        for i, data in enumerate(train_data):
-            inputs, labels = data
-            labels = labels.squeeze(0).float()
-            outputs = net(inputs)
-            loss = net.criterion(outputs, labels.squeeze(1))
-            outputs_array = outputs.detach().cpu().numpy()
-            labels_array = labels.squeeze(2).detach().cpu().numpy()
-            [residuals.append(labels_array.item(i) - output_array.item(i)) for i in range(len(output_array))]
-        return net, residuals
+    #if get_residuals: 
+    #    residuals = []
+    #    for i, data in enumerate(train_data):
+    #        inputs, labels = data
+    #        labels = labels.squeeze(0).float()
+    #        outputs = net(inputs)
+    #        loss = net.criterion(outputs, labels.squeeze(1))
+    #        outputs_array = outputs.detach().cpu().numpy()
+    #        labels_array = labels.squeeze(2).detach().cpu().numpy()
+    #        [residuals.append(labels_array.item(i) - output_array.item(i)) for i in range(len(output_array))]
+    #    return net, residuals
     
-    else: 
-        return net
+    #else: 
+    return net
