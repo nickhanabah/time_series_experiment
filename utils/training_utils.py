@@ -55,11 +55,11 @@ def train(epochs,
             optimizer.zero_grad()
             outputs = net(inputs)
             if modelling_task == 'multivariate': 
-                print(outputs)
-                print(outputs.shape)
-                print(labels)
-                print(labels.shape)
-                loss = net.criterion(outputs, labels.reshape(outputs.shape))
+                #print(outputs)
+                #print(outputs.shape)
+                #print(labels)
+                #print(labels.shape)
+                loss = net.criterion(outputs, labels[:, 0:(n_continous_features), :].reshape(outputs.shape))
             else: 
                 loss = net.criterion(outputs, labels.squeeze(1))
             if loss.item() > 100000: 
@@ -85,7 +85,7 @@ def train(epochs,
             test_labels = test_labels.squeeze(0).float()
             output = net(inputs)
             if modelling_task == 'multivariate': 
-                val_loss = net.criterion(outputs, test_labels.reshape(outputs.shape))
+                val_loss = net.criterion(outputs, test_labels[:, 0:(n_continous_features), :].reshape(outputs.shape))
             else: 
                 val_loss = net.criterion(output, test_labels.squeeze(1))
 
