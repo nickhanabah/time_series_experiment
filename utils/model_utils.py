@@ -230,7 +230,8 @@ class ARNet(nn.Module):
             raise NotImplementedError
         
         if self.density and self.model == 'dlinear': 
-            print(mu_trend.shape)
-            return torch.distributions.Normal((mu_trend + mu_season), (self.sofplus(std_trend) + self.sofplus(std_season)))
+            normal_object = torch.distributions.Normal((mu_trend + mu_season), (self.sofplus(std_trend) + self.sofplus(std_season)))
+            print(normal_object)
+            return 
         else: 
             return y_hat
