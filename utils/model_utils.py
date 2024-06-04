@@ -110,7 +110,6 @@ class ARNet(nn.Module):
             print('Points to be estimated')
             self.output_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), future_steps * self.inflation_factor)
 
-
         else: 
             raise NotImplementedError
   
