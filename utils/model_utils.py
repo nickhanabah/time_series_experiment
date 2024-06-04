@@ -179,6 +179,7 @@ class ARNet(nn.Module):
                 std_trend = self.std_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
                 mu_season =self.mu_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
                 std_season =self.std_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
+                self.sofplus = torch.nn.Softplus()
             else: 
                 y_hat_season = self.input_seasonal_layer(input_season.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
                 y_hat_trend = self.input_trend_layer(input_trend.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
@@ -229,6 +230,7 @@ class ARNet(nn.Module):
             raise NotImplementedError
         
         if self.density and self.model == 'dlinear': 
-            return torch.distributions.Normal((mu_trend + mu_season), (std_trend + std_season))
+            print(mu_trend.shape)
+            return torch.distributions.Normal((mu_trend + mu_season), (self.sofplus(std_trend) + self.sofplus(std_season)))
         else: 
             return y_hat
