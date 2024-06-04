@@ -129,17 +129,23 @@ class ARNet(nn.Module):
                 rev_std = std_values.squeeze(2)[:,self.n_continous_features - 1].reshape(self.batch_size, 1)
                 rev_eps = torch.full((self.batch_size, 1), 1)
             elif self.modelling_task == 'multivariate': 
-                rev_mean = mean_values # mean_values std_values # mean_values.squeeze(2).reshape(self.batch_size, self.n_continous_features) 
-                rev_std = std_values #std_values.squeeze(2).reshape(self.batch_size, self.n_continous_features)
-                rev_eps = eps_values # torch.full((self.batch_size, self.n_continous_features), 1)
+                rev_mean_l = []
+                for tensor in mean_values.reshape(self.batch_size,self.n_continous_features): 
+                    [rev_mean_l.append(torch.full((self.future_steps,1), i).reshape(self.future_steps)) for i in tensor]
+                rev_mean = torch.cat(rev_mean_l).reshape(self.batch_size,self.n_continous_features* self.future_steps) 
+                rev_std_l = []
+                for tensor in std_values.reshape(self.batch_size,self.n_continous_features): 
+                    [rev_std_l.append(torch.full((self.future_steps,1), i).reshape(self.future_steps)) for i in tensor]
+                std_values = torch.cat(rev_std_l).reshape(self.batch_size,self.n_continous_features* self.future_steps) 
+                rev_eps = torch.full((self.batch_size, self.n_continous_features* self.future_steps), 1)
             else: 
                 NotImplementedError
             
-            print(rev_std)
-            print('rev_std.shape')
-            print(rev_std.shape)
-            print('y_hat')
-            print(y_hat.shape)
+            #print(rev_std)
+            #print('rev_std.shape')
+            #print(rev_std.shape)
+            #print('y_hat')
+            #print(y_hat.shape)
 
             y_hat = y_hat * (rev_std + rev_eps) + rev_mean
 
