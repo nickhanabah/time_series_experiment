@@ -44,6 +44,6 @@ class TimeSeriesDataset(Dataset):
         if self.modelling_task == 'univatiate': 
             target = torch.tensor(self.df[self.target_column].iloc[(idx + self.p_lag): (idx + self.p_lag + self.future_steps),:].astype(float).to_numpy()).reshape(1,-1)
         else: 
-            target = torch.tensor(self.df[self.feature_columns].iloc[(idx + self.p_lag): (idx + self.p_lag + self.future_steps),:].astype(float).to_numpy()).reshape(1,-1)
+            target = torch.tensor(self.df.iloc[(idx + self.p_lag): (idx + self.p_lag + self.future_steps),0:7].astype(float).to_numpy()).reshape(1,-1)
 
         return input_p_lag, target
