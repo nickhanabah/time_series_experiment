@@ -101,8 +101,8 @@ class ARNet(nn.Module):
     def forward(self, input):
         input = input.float()
         new_input = input.reshape(self.batch_size,(self.n_continous_features + self.n_categorial_features), self.p_lag)
-        print('new_input')
-        print(new_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
+        #print('new_input')
+        #print(new_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
 
         if self.model == 'rlinear': 
             continous_input = new_input[:, 0:(self.n_continous_features), :]
@@ -131,15 +131,11 @@ class ARNet(nn.Module):
             elif self.modelling_task == 'multivariate': 
                 rev_mean_l = []
                 for tensor in mean_values.reshape(self.batch_size,self.n_continous_features): 
-                    print(tensor)
-                    [print(i) for i in tensor]
-                    [rev_mean_l.append(torch.full((self.future_steps,1), i).reshape(self.future_steps)) for i in tensor]
+                    [rev_mean_l.append(torch.full((self.future_steps,1), i.item()).reshape(self.future_steps)) for i in tensor]
                 rev_mean = torch.cat(rev_mean_l).reshape(self.batch_size,self.n_continous_features* self.future_steps) 
                 rev_std_l = []
                 for tensor in std_values.reshape(self.batch_size,self.n_continous_features): 
-                    print(tensor)
-                    [print(i) for i in tensor]
-                    [rev_std_l.append(torch.full((self.future_steps,1), i).reshape(self.future_steps)) for i in tensor]
+                    [rev_std_l.append(torch.full((self.future_steps,1), i.item()).reshape(self.future_steps)) for i in tensor]
                 std_values = torch.cat(rev_std_l).reshape(self.batch_size,self.n_continous_features* self.future_steps) 
                 rev_eps = torch.full((self.batch_size, self.n_continous_features* self.future_steps), 1)
             else: 
