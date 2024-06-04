@@ -54,10 +54,14 @@ class ARNet(nn.Module):
         self.modelling_task = modelling_task
 
         if self.modelling_task == 'univariate': 
+            print('Univatiate modelling')
             self.inflation_factor = 1
+            print(f'inflation factor = {self.inflation_factor}')
 
-        elif self.modelling_task == 'multivariate': 
+        elif self.modelling_task == 'multivariate':
+            print('Multivariate modelling') 
             self.inflation_factor = self.n_continous_features
+            print(f'inflation factor = {self.inflation_factor}')
 
         else: 
             raise NotImplementedError
@@ -74,7 +78,6 @@ class ARNet(nn.Module):
             self.input_trend_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), future_steps * self.inflation_factor)
             self.input_seasonal_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), future_steps * self.inflation_factor)
 
-        
         elif model == 'rlinear': 
             print('Rlinear activated')
             self.input_layer = nn.Linear(p_lag * (n_continous_features + n_categorial_features), future_steps * self.inflation_factor)
@@ -114,12 +117,17 @@ class ARNet(nn.Module):
             standardized_input = torch.cat((standardized_input, categorial_input), 1)
             standardized_input = self.dropout(standardized_input)
             y_hat = self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
+            
             if self.modelling_task == 'univariate': 
                 rev_mean = mean_values.squeeze(2)[:,self.n_continous_features - 1].reshape(self.batch_size, 1) 
                 rev_std = std_values.squeeze(2)[:,self.n_continous_features - 1].reshape(self.batch_size, 1)
+                rev_eps = torch.full((self.batch_size, 1), 1)
             elif self.modelling_task == 'multivariate': 
-                rev_mean = mean_values.squeeze(2).reshape(self.batch_size, self.n_continous_features) 
-                rev_std = std_values.squeeze(2).reshape(self.batch_size, self.n_continous_features)
+                rev_mean = mean_values # mean_values std_values # mean_values.squeeze(2).reshape(self.batch_size, self.n_continous_features) 
+                rev_std = std_values #std_values.squeeze(2).reshape(self.batch_size, self.n_continous_features)
+                rev_eps = eps_values # torch.full((self.batch_size, self.n_continous_features), 1)
+            else: 
+                NotImplementedError
             
             print(rev_mean)
             print('rev_shape')
@@ -127,7 +135,6 @@ class ARNet(nn.Module):
             print('y_hat')
             print(y_hat.shape)
 
-            rev_eps = torch.full((self.batch_size, 1), 1)
             y_hat = y_hat * (rev_std + rev_eps) + rev_mean
 
         elif self.model == 'dlinear': 
@@ -166,14 +173,17 @@ class ARNet(nn.Module):
             y_hat = self.relu(self.input_layer(standardized_input.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features))))
             y_hat = y_hat.reshape(self.batch_size,(self.n_continous_features + self.n_categorial_features), self.p_lag) + standardized_input
             y_hat = self.output_layer(y_hat.reshape(self.batch_size, self.p_lag*(self.n_continous_features + self.n_categorial_features)))
-            rev_eps = torch.full((self.batch_size, 1), 1)
 
             if self.modelling_task == 'univariate': 
                 rev_mean = mean_values.squeeze(2)[:,self.n_continous_features - 1].reshape(self.batch_size, 1) 
                 rev_std = std_values.squeeze(2)[:,self.n_continous_features - 1].reshape(self.batch_size, 1)
+                rev_eps = torch.full((self.batch_size, 1), 1)
             elif self.modelling_task == 'multivariate': 
-                rev_mean = mean_values.squeeze(2).reshape(self.batch_size, self.n_continous_features) 
-                rev_std = std_values.squeeze(2).reshape(self.batch_size, self.n_continous_features)
+                rev_mean = mean_values # mean_values std_values # mean_values.squeeze(2).reshape(self.batch_size, self.n_continous_features) 
+                rev_std = std_values #std_values.squeeze(2).reshape(self.batch_size, self.n_continous_features)
+                rev_eps = eps_values # torch.full((self.batch_size, self.n_continous_features), 1)
+            else: 
+                NotImplementedError
 
             print(rev_mean)
             print('rev_shape')
