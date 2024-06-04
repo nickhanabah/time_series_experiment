@@ -19,7 +19,7 @@ def train(epochs,
           batch_size = 8, 
           #get_residuals = False, 
           model = 'rlinear', 
-          modelling_task = 'univatiate'): 
+          modelling_task = 'univariate'): 
     
     set_seed()
     net = ARNet(p_lag=p_lag, n_continous_features= n_continous_features, n_categorial_features = n_categorial_features,future_steps=future_steps, decomp_kernel_size=decomp_kernel_size, batch_size=batch_size, model = model, modelling_task = modelling_task)
@@ -57,6 +57,8 @@ def train(epochs,
             if modelling_task == 'multivariate': 
                 loss = net.criterion(outputs, labels[:, 0:(n_continous_features), :].reshape(outputs.shape))
             else: 
+                print(outputs.shape)
+                print(labels.shape)
                 loss = net.criterion(outputs, labels.squeeze(1))
             if loss.item() > 100000: 
                 print('Loss explosion! This might be due to a very small value that is the divided by...')
