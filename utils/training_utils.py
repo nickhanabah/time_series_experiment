@@ -4,8 +4,7 @@ from torch.utils.data import DataLoader
 from utils.data_utils import TimeSeriesDataset
 from utils.metrics import metric
 
-def compute_loss(model, x, y):
-    normal_dist = model(x)
+def normal_loss(normal_dist, y):
     neg_log_likelihood = -normal_dist.log_prob(y)
     return torch.mean(neg_log_likelihood)
 
@@ -81,10 +80,8 @@ def train(epochs,
 
             optimizer.zero_grad()
             outputs = net(inputs)
-            print(outputs)
-            print(outputs(inputs))
             if density: 
-                loss = compute_loss(outputs, inputs, labels.squeeze(1)) 
+                loss = normal_loss(outputs, labels.squeeze(1)) 
             else: 
                 if modelling_task == 'multivariate': 
                     loss = net.criterion(outputs, labels[:, 0:(n_continous_features), :].reshape(outputs.shape))
