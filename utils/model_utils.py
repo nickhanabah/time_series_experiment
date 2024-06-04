@@ -60,7 +60,7 @@ class ARNet(nn.Module):
 
         elif self.modelling_task == 'multivariate':
             print('Multivariate modelling') 
-            self.inflation_factor = self.n_continous_features
+            self.inflation_factor = n_continous_features
             print(f'inflation factor = {self.inflation_factor}')
 
         else: 
