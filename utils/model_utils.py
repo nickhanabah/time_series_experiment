@@ -136,7 +136,7 @@ class ARNet(nn.Module):
                 rev_std_l = []
                 for tensor in std_values.reshape(self.batch_size,self.n_continous_features): 
                     [rev_std_l.append(torch.full((self.future_steps,1), i.item()).reshape(self.future_steps)) for i in tensor]
-                std_values = torch.cat(rev_std_l).reshape(self.batch_size,self.n_continous_features* self.future_steps) 
+                rev_std = torch.cat(rev_std_l).reshape(self.batch_size,self.n_continous_features* self.future_steps) 
                 rev_eps = torch.full((self.batch_size, self.n_continous_features* self.future_steps), 1)
             else: 
                 NotImplementedError
