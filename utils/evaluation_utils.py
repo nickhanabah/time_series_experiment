@@ -46,7 +46,12 @@ def plot_multistep_forecast(
     fig = plt.figure(figsize=(15, 15))
     if future_steps > 1:
         plt.plot(
-            range(0, len(target)), target, "blue", label="Target Series", alpha=1, zorder = 5
+            range(0, len(target)),
+            target,
+            "blue",
+            label="Target Series",
+            alpha=1,
+            zorder=5,
         )
         for i, output in enumerate(output_list, start=0):
             if i == 0:
@@ -57,7 +62,10 @@ def plot_multistep_forecast(
                     linewidth=1,
                     linestyle="dotted",
                     alpha=alpha,
-                    label='Predicted Series' + "\n" + f'{future_steps} future steps each', zorder = 2
+                    label="Predicted Series"
+                    + "\n"
+                    + f"{future_steps} future steps each",
+                    zorder=2,
                 )
             else:
                 plt.plot(
@@ -70,7 +78,12 @@ def plot_multistep_forecast(
                 )
     else:
         plt.plot(
-            range(0, len(target)), target, "blue", label="Target Series", alpha=1, zorder = 5
+            range(0, len(target)),
+            target,
+            "blue",
+            label="Target Series",
+            alpha=1,
+            zorder=5,
         )
         plt.plot(
             range(0, len(output_list)),
@@ -79,7 +92,8 @@ def plot_multistep_forecast(
             linewidth=1,
             linestyle="dotted",
             alpha=alpha,
-            label='Predicted Series' + "\n" + f'{future_steps} future steps each', zorder = 2
+            label="Predicted Series" + "\n" + f"{future_steps} future steps each",
+            zorder=2,
         )
 
     plt.title(
