@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
 from utils.metrics import metric
 
-def plot_multistep_forecast(test_data,target_list, neural_net, future_steps, number_of_forecasts= 100): 
-    peter = target_list
+def plot_multistep_forecast(test_data, neural_net, future_steps, number_of_forecasts= 100): 
     output_list = []
     target_list = []
     for i, data in enumerate(test_data):
@@ -43,7 +42,7 @@ def plot_multistep_forecast(test_data,target_list, neural_net, future_steps, num
         if future_steps > 110:
             alpha = 0.1
     else: 
-        target = peter # target_list
+        target = target_list
         alpha = 1
 
     #print('target')
