@@ -46,40 +46,40 @@ def plot_multistep_forecast(
     fig = plt.figure(figsize=(15, 15))
     if future_steps > 1:
         plt.plot(
-            range(0, len(target)), target, "g", label="target time series", alpha=0.9
+            range(0, len(target)), target, "blue", label="Target Series", alpha=1, zorder = 5
         )
         for i, output in enumerate(output_list, start=0):
             if i == 0:
                 plt.plot(
                     range(i, i + future_steps),
                     output,
-                    color="#F39C12",
+                    color="violet",
                     linewidth=1,
-                    linestyle=".",
+                    linestyle="dotted",
                     alpha=alpha,
-                    label="pred time series" + "\n" + f"{future_steps} each",
+                    label='Predicted Series' + "\n" + f'{future_steps} future steps each', zorder = 2
                 )
             else:
                 plt.plot(
                     range(i, i + future_steps),
                     output,
-                    color="#F39C12",
+                    color="violet",
                     linewidth=1,
-                    linestyle=".",
+                    linestyle="dotted",
                     alpha=alpha,
                 )
     else:
         plt.plot(
-            range(0, len(target)), target, "g", label="target time series", alpha=0.9
+            range(0, len(target)), target, "blue", label="Target Series", alpha=1, zorder = 5
         )
         plt.plot(
             range(0, len(output_list)),
             output_list,
-            color="#F39C12",
+            color="violet",
             linewidth=1,
-            linestyle=".",
+            linestyle="dotted",
             alpha=alpha,
-            label="pred time series" + "\n" + f"{future_steps} each",
+            label='Predicted Series' + "\n" + f'{future_steps} future steps each', zorder = 2
         )
 
     plt.title(
@@ -90,8 +90,8 @@ def plot_multistep_forecast(
     plt.ylabel("Oil Temparature (Target variable)")
 
     plt.savefig(
-        f"/workspaces/time_series_experiment/plots/{neural_net.model}_{future_steps}fs_{number_of_forecasts}fcs_{neural_net.model}plag.png"
+        f"/workspaces/time_series_experiment/plots/{neural_net.model}_{future_steps}fs_{number_of_forecasts}fcs_{neural_net.model}_{neural_net.p_lag}plag.png"
     )
     plt.savefig(
-        f"/workspaces/time_series_experiment/plots/{neural_net.model}_{future_steps}fs_{number_of_forecasts}fcs_{neural_net.model}plag.pdf"
+        f"/workspaces/time_series_experiment/plots/{neural_net.model}_{future_steps}fs_{number_of_forecasts}fcs_{neural_net.model}_{neural_net.p_lag}plag.pdf"
     )

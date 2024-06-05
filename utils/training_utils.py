@@ -156,31 +156,29 @@ def train(
                 print("---------------------------")
 
                 final_test_result = f"""
-                Test metrics: -------
-                Running (test) loss is {running_val_loss/val_counter}
-                Test MAE is {running_val_mae/val_counter}
-                Test MSE is {running_val_mse/val_counter}
-                ---------------------------
-                For 
-                epochs = {epochs}
-                p_lag = {p_lag}
-                future_steps = {future_steps}
-                n_continous_features = {n_continous_features}
-                n_categorial_features = {n_categorial_features}
-                training_df = {training_df}
-                validation_df = {validation_df}
-                feature_columns = {feature_columns}
-                target_column = {target_column} 
-                learning_rate = {learning_rate} 
-                decomp_kernel_size = {decomp_kernel_size}
-                batch_size = {batch_size} 
-                model = {model}
-                modelling_task = {modelling_task}
-                density = {density}
-                ---------------------------
+Test metrics: -------
+Running (test) loss is {running_val_loss/val_counter}
+Test MAE is {running_val_mae/val_counter}
+Test MSE is {running_val_mse/val_counter}
+---------------------------
+Parameters: -------
+epochs = {epochs}
+p_lag = {p_lag}
+future_steps = {future_steps}
+n_continous_features = {n_continous_features}
+n_categorial_features = {n_categorial_features}
+feature_columns = {feature_columns}
+target_column = {target_column} 
+learning_rate = {learning_rate} 
+decomp_kernel_size = {decomp_kernel_size}
+batch_size = {batch_size} 
+model = {model}
+modelling_task = {modelling_task}
+density = {density}
+---------------------------
                 """
                 f = open(
-                    f"/workspaces/time_series_experiment/results/{net.model}_{future_steps}fs_{net.model}plag.txt",
+                    f"/workspaces/time_series_experiment/results/{net.model}_{future_steps}fs_{net.model}_{p_lag}plag.txt",
                     "w",
                 )
                 f.write(final_test_result)
