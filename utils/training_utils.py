@@ -1,12 +1,8 @@
 import torch
-from utils.model_utils import ARNet, set_seed
+from utils.model_utils import ARNet, set_seed, normal_loss
 from torch.utils.data import DataLoader
 from utils.data_utils import TimeSeriesDataset
 from utils.metrics import metric
-
-def normal_loss(normal_dist, y):
-    neg_log_likelihood = -normal_dist.log_prob(y)
-    return torch.mean(neg_log_likelihood)
 
 def train(epochs, 
           p_lag, 
@@ -19,8 +15,7 @@ def train(epochs,
           target_column = ['OT'], 
           learning_rate=1.e-4, 
           decomp_kernel_size= 7, 
-          batch_size = 8, 
-          #get_residuals = False, 
+          batch_size = 8,  
           model = 'rlinear', 
           modelling_task = 'univariate', 
           density=False): 
@@ -64,10 +59,8 @@ def train(epochs,
         running_val_loss = 0.
         running_train_mae  = 0.
         running_train_mse  = 0.
-        running_train_mape = 0.
         running_val_mae  = 0.
         running_val_mse  = 0.
-        running_val_mape = 0.
 
         if epoch + 1 != 1 and (epoch + 1) % 2 == 0: 
             learning_rate = learning_rate / 2
@@ -95,10 +88,9 @@ def train(epochs,
             if density == False:
                 outputs_array = outputs.detach().cpu().numpy()
                 labels_array = labels.squeeze(2).detach().cpu().numpy()
-                mae, mse, mape= metric(pred=outputs_array, true=labels_array)
+                mae, mse= metric(pred=outputs_array, true=labels_array)
                 running_train_mae  += mae
                 running_train_mse  += mse
-                running_train_mape += mape
                 
             running_train_loss += loss.item()
             train_counter += batch_size
@@ -120,10 +112,9 @@ def train(epochs,
 
                 output_array = output.detach().cpu().numpy()
                 test_labels_array = test_labels.squeeze(2).detach().cpu().numpy()
-                mae, mse, mape = metric(pred=output_array, true=test_labels_array)
+                mae, mse = metric(pred=output_array, true=test_labels_array)
                 running_val_mae  += mae
                 running_val_mse  += mse
-                running_val_mape += mape
                 val_counter += batch_size
             val_loss_list.append(running_val_loss/val_counter)
 
@@ -135,12 +126,38 @@ def train(epochs,
                 print(f"Running (training) loss is {running_train_loss/train_counter}.")
                 print(f"Training MAE is {running_train_mae/train_counter}.")
                 print(f"Training MSE is {running_train_mse/train_counter}.")
-                print(f"Training MAPE is {running_train_mape/train_counter}.")
                 print("")
-                print("Val metrics: -------")
-                print(f"Running (validation) loss is {running_val_loss/val_counter}.")
-                print(f"Validation MAE is {running_val_mae/val_counter}.")
-                print(f"Validation MSE is {running_val_mse/val_counter}.")
-                print(f"Validation MAPE is {running_val_mape/val_counter}.")
+                print("Test metrics: -------")
+                print(f"Running (test) loss is {running_val_loss/val_counter}.")
+                print(f"Test MAE is {running_val_mae/val_counter}.")
+                print(f"Test MSE is {running_val_mse/val_counter}.")
                 print("---------------------------")
+
+                final_test_result = f"""
+                Test metrics: -------
+                Running (test) loss is {running_val_loss/val_counter}
+                Test MAE is {running_val_mae/val_counter}
+                Test MSE is {running_val_mse/val_counter}
+                ---------------------------
+                For 
+                epochs = {epochs}
+                p_lag = {p_lag}
+                future_steps = {future_steps}
+                n_continous_features = {n_continous_features}
+                n_categorial_features = {n_categorial_features}
+                training_df = {training_df}
+                validation_df = {validation_df}
+                feature_columns = {feature_columns}
+                target_column = {target_column} 
+                learning_rate = {learning_rate} 
+                decomp_kernel_size = {decomp_kernel_size}
+                batch_size = {batch_size} 
+                model = {model}
+                modelling_task = {modelling_task}
+                density = {density}
+                ---------------------------
+                """
+                f = open(f"/workspaces/time_series_experiment/results/{net.model}_{future_steps}fs_{net.model}plag.txt", "w")
+                f.write(final_test_result)
+                f.close()
     return net
