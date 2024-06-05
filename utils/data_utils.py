@@ -31,7 +31,7 @@ def split_dataset(df,
     return training_df,  test_df #val_df,
 
 class TimeSeriesDataset(Dataset):
-    def __init__(self,df, target_column,feature_columns,future_steps, p_lag, modelling_task = 'univatiate'):
+    def __init__(self,df, target_column,feature_columns,future_steps, p_lag, modelling_task = 'univariate'):
         self.df = df
         self.p_lag = p_lag
         self.len_df_minus_lag = len(self.df) - p_lag - future_steps
