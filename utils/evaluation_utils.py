@@ -7,6 +7,7 @@ def plot_multistep_forecast(test_data,target_list, neural_net, future_steps, num
     target_list = []
     for i, data in enumerate(test_data):
         inputs, labels = data
+        print(labels)
         output = neural_net(inputs)
         if i > number_of_forecasts: 
             break
