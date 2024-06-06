@@ -354,8 +354,10 @@ class ARNet(nn.Module):
                     y_hat_trend = self.input_trend_1layer(
                         input_trend_reshaped
                     )
-                    print(self.relu(self.input_trend_2layer(y_hat_trend)).shape)
+                    print(y_hat_trend.shape)
                     print(input_trend_reshaped.shape)
+                    print(self.relu(self.input_trend_2layer(y_hat_trend)).shape)
+
                     y_hat_trend = self.relu(self.input_trend_2layer(y_hat_trend)) + input_trend_reshaped
                     y_hat_trend = self.relu(self.input_trend_3layer(y_hat_trend)) + input_trend_reshaped
                     y_hat_trend = self.relu(self.input_trend_4layer(y_hat_trend)) + input_trend_reshaped
