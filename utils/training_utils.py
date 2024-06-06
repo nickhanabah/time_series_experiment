@@ -179,7 +179,7 @@ density = {density}
 ---------------------------
                 """
                 f = open(
-                    f"/workspaces/time_series_experiment/results/{net.model}_{future_steps}fs_{net.model}_{p_lag}plag.txt",
+                    f"/workspaces/time_series_experiment/results/{dataset_name}df_{net.model}_{future_steps}fs_{net.model}_{p_lag}plag.txt",
                     "w",
                 )
                 f.write(final_test_result)
