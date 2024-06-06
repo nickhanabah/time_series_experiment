@@ -22,6 +22,7 @@ def train(
     model="rlinear",
     modelling_task="univariate",
     density=False,
+    depth = 'shallow'
 ):
 
     set_seed()
@@ -35,6 +36,7 @@ def train(
         model=model,
         modelling_task=modelling_task,
         density=density,
+        depth = depth
     )
     train_data = DataLoader(
         TimeSeriesDataset(
@@ -176,6 +178,7 @@ batch_size = {batch_size}
 model = {model}
 modelling_task = {modelling_task}
 density = {density}
+depth = {depth}
 ---------------------------
                 """
                 f = open(

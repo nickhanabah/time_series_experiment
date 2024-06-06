@@ -56,6 +56,7 @@ class ARNet(nn.Module):
         optimization: str = "mse",
         modelling_task: str = "univariate",
         density: bool = False,
+        depth:str = 'shallow'
     ):
 
         super(ARNet, self).__init__()
@@ -64,6 +65,7 @@ class ARNet(nn.Module):
         self.n_categorial_features = n_categorial_features
         self.modelling_task = modelling_task
         self.density = density
+        self.depth = depth
 
         if self.modelling_task == "univariate":
             print("Univatiate modelling")
@@ -105,14 +107,53 @@ class ARNet(nn.Module):
                 )
             else:
                 print("Points to be estimated")
-                self.input_trend_layer = nn.Linear(
-                    p_lag * (n_continous_features + n_categorial_features),
-                    future_steps * self.inflation_factor,
-                )
-                self.input_seasonal_layer = nn.Linear(
-                    p_lag * (n_continous_features + n_categorial_features),
-                    future_steps * self.inflation_factor,
-                )
+                if depth == 'deep': 
+                    print("With a deep network")
+                    self.relu = nn.ReLU()
+                    self.input_trend_1layer = nn.Linear(
+                        p_lag * (n_continous_features + n_categorial_features),
+                        p_lag * (n_continous_features + n_categorial_features),
+                    )
+                    self.input_seasonal_1layer = nn.Linear(
+                        p_lag * (n_continous_features + n_categorial_features),
+                        p_lag * (n_continous_features + n_categorial_features),
+                    )
+                    self.input_trend_2layer = nn.Linear(
+                        p_lag * (n_continous_features + n_categorial_features),
+                        p_lag * (n_continous_features + n_categorial_features),
+                    )
+                    self.input_seasonal_2layer = nn.Linear(
+                        p_lag * (n_continous_features + n_categorial_features),
+                        p_lag * (n_continous_features + n_categorial_features),
+                    )
+                    self.input_trend_3layer = nn.Linear(
+                        p_lag * (n_continous_features + n_categorial_features),
+                        p_lag * (n_continous_features + n_categorial_features),
+                    )
+                    self.input_seasonal_3layer = nn.Linear(
+                        p_lag * (n_continous_features + n_categorial_features),
+                        p_lag * (n_continous_features + n_categorial_features),
+                    )
+                    self.input_trend_4layer = nn.Linear(
+                        p_lag * (n_continous_features + n_categorial_features),
+                        future_steps * self.inflation_factor,
+                    )
+                    self.input_seasonal_4layer = nn.Linear(
+                        p_lag * (n_continous_features + n_categorial_features),
+                        future_steps * self.inflation_factor,
+                    )
+                elif depth == 'shallow': 
+                    print("With a shallow network")
+                    self.input_trend_layer = nn.Linear(
+                        p_lag * (n_continous_features + n_categorial_features),
+                        future_steps * self.inflation_factor,
+                    )
+                    self.input_seasonal_layer = nn.Linear(
+                        p_lag * (n_continous_features + n_categorial_features),
+                        future_steps * self.inflation_factor,
+                    )
+                else: 
+                    raise NotImplementedError
 
         elif model == "rlinear":
             print("Rlinear activated")
@@ -291,20 +332,45 @@ class ARNet(nn.Module):
                 )
                 self.sofplus = torch.nn.Softplus()
             else:
-                y_hat_season = self.input_seasonal_layer(
-                    input_season.reshape(
-                        self.batch_size,
-                        self.p_lag
-                        * (self.n_continous_features + self.n_categorial_features),
+                if self.depth == 'deep': 
+                    y_hat_season = self.input_seasonal_1layer(
+                        input_season.reshape(
+                            self.batch_size,
+                            self.p_lag
+                            * (self.n_continous_features + self.n_categorial_features),
+                        )
                     )
-                )
-                y_hat_trend = self.input_trend_layer(
-                    input_trend.reshape(
-                        self.batch_size,
-                        self.p_lag
-                        * (self.n_continous_features + self.n_categorial_features),
+                    y_hat_season = self.relu(self.input_seasonal_2layer(y_hat_season))
+                    y_hat_season = self.relu(self.input_seasonal_3layer(y_hat_season))
+                    y_hat_season = self.relu(self.input_seasonal_4layer(y_hat_season))
+
+                    y_hat_trend = self.input_trend_1layer(
+                        input_trend.reshape(
+                            self.batch_size,
+                            self.p_lag
+                            * (self.n_continous_features + self.n_categorial_features),
+                        )
                     )
-                )
+                    y_hat_trend = self.relu(self.input_trend_2layer(y_hat_trend))
+                    y_hat_trend = self.relu(self.input_trend_3layer(y_hat_trend))
+                    y_hat_trend = self.relu(self.input_trend_4layer(y_hat_trend))
+                elif self.depth == 'shallow': 
+                    y_hat_season = self.input_seasonal_layer(
+                        input_season.reshape(
+                            self.batch_size,
+                            self.p_lag
+                            * (self.n_continous_features + self.n_categorial_features),
+                        )
+                    )
+                    y_hat_trend = self.input_trend_layer(
+                        input_trend.reshape(
+                            self.batch_size,
+                            self.p_lag
+                            * (self.n_continous_features + self.n_categorial_features),
+                        )
+                    )
+                else: 
+                    raise NotImplementedError
                 y_hat = y_hat_season + y_hat_trend
 
         elif self.model == "rmlp":
