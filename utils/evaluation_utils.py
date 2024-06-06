@@ -3,7 +3,7 @@ from utils.metrics import metric
 
 
 def plot_multistep_forecast(
-    test_data, neural_net, future_steps, number_of_forecasts=100
+    test_data, dataset_name:str, neural_net, future_steps, number_of_forecasts=100
 ):
     output_list = []
     target_list = []
@@ -104,8 +104,8 @@ def plot_multistep_forecast(
     plt.ylabel("Oil Temparature (Target variable)")
 
     plt.savefig(
-        f"/workspaces/time_series_experiment/plots/{neural_net.model}_{future_steps}fs_{number_of_forecasts}fcs_{neural_net.model}_{neural_net.p_lag}plag.png"
+        f"/workspaces/time_series_experiment/plots/{dataset_name}df_{neural_net.model}_{future_steps}fs_{number_of_forecasts}fcs_{neural_net.model}_{neural_net.p_lag}plag.png"
     )
     plt.savefig(
-        f"/workspaces/time_series_experiment/plots/{neural_net.model}_{future_steps}fs_{number_of_forecasts}fcs_{neural_net.model}_{neural_net.p_lag}plag.pdf"
+        f"/workspaces/time_series_experiment/plots/{dataset_name}df_{neural_net.model}_{future_steps}fs_{number_of_forecasts}fcs_{neural_net.model}_{neural_net.p_lag}plag.pdf"
     )
