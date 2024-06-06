@@ -1,8 +1,8 @@
 
 Test metrics: -------
-Running (test) loss is 4.505930601627704
-Test MAE is 0.6238841563777803
-Test MSE is 4.584705003083045
+Running (test) loss is 5.964474690832947
+Test MAE is 0.7341280420593272
+Test MSE is 6.03396439317412
 ---------------------------
 Parameters: -------
 epochs = 24
@@ -18,6 +18,6 @@ batch_size = 8
 model = dlinear
 modelling_task = univariate
 density = False
-depth = deep
+depth = shallow
 ---------------------------
                 
