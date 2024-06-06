@@ -347,8 +347,6 @@ class ARNet(nn.Module):
                     y_hat_season = self.input_seasonal_1layer(
                         input_season_reshaped
                     )
-                    print(self.relu(self.input_trend_2layer(y_hat_trend)).shape)
-                    print(input_trend_reshaped.shape)
                     y_hat_season = self.relu(self.input_seasonal_2layer(y_hat_season)) + input_season_reshaped
                     y_hat_season = self.relu(self.input_seasonal_3layer(y_hat_season)) + input_season_reshaped
                     y_hat_season = self.relu(self.input_seasonal_4layer(y_hat_season)) + input_season_reshaped
@@ -356,6 +354,8 @@ class ARNet(nn.Module):
                     y_hat_trend = self.input_trend_1layer(
                         input_trend_reshaped
                     )
+                    print(self.relu(self.input_trend_2layer(y_hat_trend)).shape)
+                    print(input_trend_reshaped.shape)
                     y_hat_trend = self.relu(self.input_trend_2layer(y_hat_trend)) + input_trend_reshaped
                     y_hat_trend = self.relu(self.input_trend_3layer(y_hat_trend)) + input_trend_reshaped
                     y_hat_trend = self.relu(self.input_trend_4layer(y_hat_trend)) + input_trend_reshaped
