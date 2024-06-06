@@ -333,27 +333,30 @@ class ARNet(nn.Module):
                 self.sofplus = torch.nn.Softplus()
             else:
                 if self.depth == 'deep': 
-                    y_hat_season = self.input_seasonal_1layer(
-                        input_season.reshape(
+                    input_season_reshaped = input_season.reshape(
                             self.batch_size,
                             self.p_lag
                             * (self.n_continous_features + self.n_categorial_features),
                         )
+                    
+                    input_trend_reshaped = input_trend.reshape(
+                            self.batch_size,
+                            self.p_lag
+                            * (self.n_continous_features + self.n_categorial_features),
+                        )
+                    y_hat_season = self.input_seasonal_1layer(
+                        input_season_reshaped
                     )
-                    y_hat_season = self.relu(self.input_seasonal_2layer(y_hat_season))
-                    y_hat_season = self.relu(self.input_seasonal_3layer(y_hat_season))
-                    y_hat_season = self.relu(self.input_seasonal_4layer(y_hat_season))
+                    y_hat_season = self.relu(self.input_seasonal_2layer(y_hat_season)) + input_season_reshaped
+                    y_hat_season = self.relu(self.input_seasonal_3layer(y_hat_season)) + input_season_reshaped
+                    y_hat_season = self.relu(self.input_seasonal_4layer(y_hat_season)) + input_season_reshaped
 
                     y_hat_trend = self.input_trend_1layer(
-                        input_trend.reshape(
-                            self.batch_size,
-                            self.p_lag
-                            * (self.n_continous_features + self.n_categorial_features),
-                        )
+                        input_trend_reshaped
                     )
-                    y_hat_trend = self.relu(self.input_trend_2layer(y_hat_trend))
-                    y_hat_trend = self.relu(self.input_trend_3layer(y_hat_trend))
-                    y_hat_trend = self.relu(self.input_trend_4layer(y_hat_trend))
+                    y_hat_trend = self.relu(self.input_trend_2layer(y_hat_trend)) + input_trend_reshaped
+                    y_hat_trend = self.relu(self.input_trend_3layer(y_hat_trend)) + input_trend_reshaped
+                    y_hat_trend = self.relu(self.input_trend_4layer(y_hat_trend)) + input_trend_reshaped
                 elif self.depth == 'shallow': 
                     y_hat_season = self.input_seasonal_layer(
                         input_season.reshape(
