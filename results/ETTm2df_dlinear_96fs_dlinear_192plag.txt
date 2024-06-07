@@ -1,0 +1,23 @@
+
+Test metrics: -------
+Running (test) loss is 50.97273031711918
+Test MAE is 2.1750407554554414
+Test MSE is 51.044190346047614
+---------------------------
+Parameters: -------
+epochs = 8
+p_lag = 192
+future_steps = 96
+n_continous_features = 7
+n_categorial_features = 5
+feature_columns = ['HUFL', 'HULL', 'MUFL', 'MULL', 'LUFL', 'LULL', 'OT', 'day', 'month', 'hour', 'minute', 'weekday']
+target_column = ['OT'] 
+learning_rate = 6.25e-06 
+decomp_kernel_size = 24
+batch_size = 8 
+model = dlinear
+modelling_task = univariate
+density = False
+depth = shallow
+---------------------------
+                
