@@ -550,5 +550,6 @@ class MoE(nn.Module):
         outputs = torch.stack(
             [expert(x) for expert in self.experts], dim=2)
         print(outputs)
-        weights = weights.unsqueeze(1).expand_as(outputs)
+        weights = torch.reshape(weights, outputs.shape())
+        #weights = weights.unsqueeze(1).expand_as(outputs)
         return torch.sum(outputs * weights, dim=2)
