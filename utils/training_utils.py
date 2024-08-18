@@ -6,6 +6,7 @@ from utils.metrics import metric
 
 def train_expert_or_moe(
         net,
+        learning_rate: float, 
         train_data:DataLoader, 
         modelling_task: str, 
         n_continous_features:int, 
@@ -21,6 +22,8 @@ def train_expert_or_moe(
     
     if moe == False: 
         print(f'Started training expert {i +1}/{num_of_experts}')
+    else: 
+        print('Started training Mixture of Experts')
     optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
     for epoch in range(epochs):
         train_counter = 0
@@ -184,6 +187,7 @@ def train(
     trained_experts = []
     for i in range(num_of_experts): 
         net = train_expert_or_moe(
+                 learning_rate=learning_rate, 
                  num_of_experts=num_of_experts, 
                  net=untrained_experts[i], 
                  epochs=epochs, 
@@ -202,6 +206,7 @@ def train(
         moe_model = MoE(trained_experts)
         moe_model = train_expert_or_moe(
             num_of_experts=num_of_experts, 
+            learning_rate=learning_rate, 
             net=moe_model, 
             epochs=epochs, 
             train_data=train_data, 
