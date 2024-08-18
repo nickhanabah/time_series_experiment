@@ -3,6 +3,7 @@ from utils.model_utils import ARNet, set_seed, normal_loss, MoE
 from torch.utils.data import DataLoader
 from utils.data_utils import TimeSeriesDataset
 from utils.metrics import metric
+import random
 
 def train_expert_or_moe(
         net,
@@ -93,7 +94,6 @@ def train_expert_or_moe(
                 running_val_loss += val_loss.item()
 
                 output_array = output.detach().cpu().numpy()
-                print(test_labels)
                 test_labels_array = test_labels.squeeze(2).detach().cpu().numpy()
                 mae, mse = metric(pred=output_array, true=test_labels_array)
                 running_val_mae += mae
@@ -139,9 +139,9 @@ def train(
     depth = 'shallow'
 ):
 
-    #set_seed()
     untrained_experts = []
     for _ in range(num_of_experts): 
+        set_seed(random.randint(3, 9))
         net = ARNet(
                 p_lag=p_lag,
                 n_continous_features=n_continous_features,

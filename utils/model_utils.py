@@ -512,6 +512,7 @@ class Gating(nn.Module):
         self.layer4 = nn.Linear(128, num_experts)
 
     def forward(self, x):
+        x = x.float()
         x = torch.relu(self.layer1(x))
         x = self.dropout1(x)
 
