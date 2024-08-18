@@ -536,6 +536,7 @@ class MoE(nn.Module):
                 param.requires_grad = False
 
         num_experts = len(trained_experts)
+        input_dim = self.experts[0].p_lag * (self.experts[0].n_continous_features + self.experts[0].n_categorial_features)
         self.gating = Gating(input_dim, num_experts)
 
     def forward(self, x):
