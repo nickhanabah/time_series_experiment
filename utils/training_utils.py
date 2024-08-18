@@ -93,6 +93,7 @@ def train_expert_or_moe(
                 running_val_loss += val_loss.item()
 
                 output_array = output.detach().cpu().numpy()
+                print(test_labels)
                 test_labels_array = test_labels.squeeze(2).detach().cpu().numpy()
                 mae, mse = metric(pred=output_array, true=test_labels_array)
                 running_val_mae += mae
