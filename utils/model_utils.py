@@ -542,14 +542,15 @@ class MoE(nn.Module):
         self.gating = Gating(input_dim, num_experts)
 
     def forward(self, x):
-        print('weights')
+        #print('weights')
         weights = self.gating(x)
-        print(weights)
-        print('----------------------------')
-        print('outputs')
+        #print(weights)
+        #print('----------------------------')
+        #print('outputs')
         outputs = torch.stack(
             [expert(x) for expert in self.experts], dim=2)
-        print(outputs)
+        print(outputs.shape)
         weights = torch.reshape(weights, outputs.shape())
+        print(weights.shape)
         #weights = weights.unsqueeze(1).expand_as(outputs)
         return torch.sum(outputs * weights, dim=2)
