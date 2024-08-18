@@ -527,9 +527,10 @@ class Gating(nn.Module):
 
 
 class MoE(nn.Module):
-    def __init__(self, trained_experts:list[ARNet], input_dim:int):
+    def __init__(self, trained_experts:list[ARNet]):
         super(MoE, self).__init__()
         self.experts = nn.ModuleList(trained_experts)
+        self.criterion = nn.MSELoss()
 
         for expert in self.experts:
             for param in expert.parameters():
